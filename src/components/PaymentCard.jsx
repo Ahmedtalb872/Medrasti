@@ -18,7 +18,7 @@ export default function PaymentCard({ student }) {
         <div className="doc__student-grid">
           <div><span>الاسم</span><b>{student.name}</b></div>
           <div><span>رقم الطالب</span><b dir="ltr">{studentNo(state, student)}</b></div>
-          <div><span>الفصل</span><b>{classOf(state, student)?.name ?? '-'}</b></div>
+          <div><span>القسم</span><b>{classOf(state, student)?.name ?? '-'}</b></div>
           <div><span>ولي الأمر</span><b>{student.guardianName || '-'}</b></div>
           <div><span>الهاتف</span><b dir="ltr">{student.guardianPhone || '-'}</b></div>
           <div><span>تاريخ الإصدار</span><b>{fmtDate(todayIso())}</b></div>

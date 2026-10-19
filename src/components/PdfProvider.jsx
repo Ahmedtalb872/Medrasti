@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 
 const PdfContext = createContext(null)
 
-// يرسم المستند المطلوب خارج الشاشة، ثم يحوّله إلى PDF ويحمّله
+// يرسم المستند المطلوب خارج الشاشة، ثم يحوّله إلى PDF ويحمّله أو يعيده كملف
 export function PdfProvider({ children }) {
   const [job, setJob] = useState(null)
   const stageRef = useRef(null)
@@ -16,11 +16,15 @@ export function PdfProvider({ children }) {
     // مكتبة PDF كبيرة الحجم، لذلك تُحمَّل فقط عند الحاجة
     import('../utils/pdf.js')
       .then(({ cardsToPdf, elementToPdf }) =>
-        job.kind === 'cards'
-          ? cardsToPdf(nodes, job.filename)
-          : elementToPdf(nodes[0], job.filename, job.options),
+        job.kind === 'cards' ? cardsToPdf(nodes) : elementToPdf(nodes[0], job.options),
       )
-      .then(job.resolve, (err) => {
+      .then((pdf) => {
+        // asBlob: يعيد الملف بدل تحميله (لمشاركته على واتساب مثلًا)
+        if (job.options.asBlob) return job.resolve(pdf.output('blob'))
+        pdf.save(job.filename)
+        job.resolve()
+      })
+      .catch((err) => {
         console.error(err)
         alert('تعذّر إنشاء ملف PDF، حاول مرة أخرى.')
         job.reject(err)

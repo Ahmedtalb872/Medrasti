@@ -21,7 +21,7 @@ export default function Cards() {
 
       <div className="toolbar">
         <select value={classId} onChange={(e) => setClassId(e.target.value)}>
-          <option value="">كل الفصول</option>
+          <option value="">كل الأقسام</option>
           {state.classes.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
         <span className="muted small">ملف الطباعة يضع 8 بطاقات في كل صفحة A4 بالمقاس القياسي 85.6 × 54 مم</span>
@@ -39,7 +39,7 @@ export default function Cards() {
           ))}
         </div>
       ) : (
-        <Empty>لا يوجد طلاب في هذا الفصل</Empty>
+        <Empty>لا يوجد طلاب في هذا القسم</Empty>
       )}
     </>
   )

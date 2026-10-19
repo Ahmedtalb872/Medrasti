@@ -21,7 +21,7 @@ export default function Dashboard() {
       <PageHeader title="لوحة التحكم" subtitle={`نظرة عامة على ${state.settings.schoolName}`} />
 
       <div className="stats">
-        <StatCard icon={Users} label="الطلاب" value={state.students.length} hint={`${state.classes.length} فصول`} />
+        <StatCard icon={Users} label="الطلاب" value={state.students.length} hint={`${state.classes.length} أقسام`} />
         <StatCard icon={GraduationCap} label="المعلمون" value={state.teachers.length} tone="violet" />
         <StatCard icon={Wallet} label="المحصَّل" value={money(paid, currency)} hint={`من ${money(due, currency)}`} tone="success" />
         <StatCard icon={AlertTriangle} label="المتبقي" value={money(due - paid, currency)} hint={`${late.length} طلاب متأخرون`} tone="danger" />

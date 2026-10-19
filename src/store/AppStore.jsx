@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useRef,
 import { seed } from '../data/seed.js'
 import { todayIso } from '../utils/format.js'
 
-const KEY = 'medrasti:data:v1'
+const KEY = 'medrasti:data:v2'
 const StoreContext = createContext(null)
 
 function load() {

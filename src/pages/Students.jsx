@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Eye, IdCard, Plus, Search } from 'lucide-react'
+import { Eye, IdCard, MessageCircle, Plus, Search } from 'lucide-react'
 import { useStore } from '../store/AppStore.jsx'
 import { account, ACCOUNT_STATUS, classOf, studentNo } from '../utils/finance.js'
 import { Avatar, Badge, Empty, Modal, PageHeader, Progress } from '../components/ui.jsx'
 import { StudentForm } from '../components/forms.jsx'
 import { useDocs } from '../components/useDocs.jsx'
+import InvoiceModal from '../components/InvoiceModal.jsx'
 
 export default function Students() {
   const store = useStore()
@@ -15,6 +16,7 @@ export default function Students() {
   const [query, setQuery] = useState('')
   const [classId, setClassId] = useState('')
   const [adding, setAdding] = useState(false)
+  const [invoiceFor, setInvoiceFor] = useState(null)
 
   const q = query.trim()
   const rows = state.students
@@ -36,7 +38,7 @@ export default function Students() {
           <input placeholder="بحث بالاسم أو الرقم أو الهاتف…" value={query} onChange={(e) => setQuery(e.target.value)} />
         </div>
         <select value={classId} onChange={(e) => setClassId(e.target.value)}>
-          <option value="">كل الفصول</option>
+          <option value="">كل الأقسام</option>
           {state.classes.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
       </div>
@@ -46,7 +48,7 @@ export default function Students() {
           <div className="table-wrap">
             <table className="table">
               <thead>
-                <tr><th>الطالب</th><th>الفصل</th><th>ولي الأمر</th><th>السداد</th><th>الحالة</th><th></th></tr>
+                <tr><th>الطالب</th><th>القسم</th><th>ولي الأمر</th><th>السداد</th><th>الحالة</th><th></th></tr>
               </thead>
               <tbody>
                 {rows.map(({ s, acc }) => (
@@ -73,6 +75,9 @@ export default function Students() {
                     </td>
                     <td><Badge tone={ACCOUNT_STATUS[acc.status].tone}>{ACCOUNT_STATUS[acc.status].label}</Badge></td>
                     <td className="row-actions">
+                      <button className="icon-btn icon-btn--whatsapp" title="فاتورة واتساب" onClick={() => setInvoiceFor(s)}>
+                        <MessageCircle size={18} />
+                      </button>
                       <button className="icon-btn" title="تحميل بطاقة الطالب" onClick={() => docs.idCard(s)} disabled={docs.busy}>
                         <IdCard size={18} />
                       </button>
@@ -90,6 +95,7 @@ export default function Students() {
         )}
       </div>
 
+      {invoiceFor && <InvoiceModal student={invoiceFor} onClose={() => setInvoiceFor(null)} />}
       {adding && (
         <Modal title="إضافة طالب جديد" onClose={() => setAdding(false)} wide>
           <StudentForm

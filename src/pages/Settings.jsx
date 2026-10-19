@@ -39,7 +39,8 @@ export default function Settings() {
         <div className="form-grid">
           <label className="field field--full"><span>اسم المدرسة</span><input value={form.schoolName} onChange={set('schoolName')} required /></label>
           <label className="field"><span>العنوان</span><input value={form.address} onChange={set('address')} /></label>
-          <label className="field"><span>الهاتف</span><input dir="ltr" value={form.phone} onChange={set('phone')} /></label>
+          <label className="field"><span>هاتف التواصل</span><input dir="ltr" value={form.phone} onChange={set('phone')} /></label>
+          <label className="field"><span>رمز الدولة لواتساب</span><input dir="ltr" value={form.countryCode ?? ''} onChange={set('countryCode')} placeholder="222" /></label>
         </div>
 
         <h2 className="form-title">الإعدادات المالية</h2>

@@ -329,3 +329,30 @@ a.person:hover b { color: var(--primary); }
   .stat-card__value { font-size: 1.1rem; }
   .card-preview .id-card, .cards-grid__item .id-card { zoom: 0.76; }
 }
+
+/* ---------- الشعار وواتساب والفاتورة ---------- */
+.logo { display: block; border-radius: 50%; object-fit: cover; background: #fff; flex-shrink: 0; }
+.brand__logo { box-shadow: 0 0 0 3px rgb(255 255 255 / 0.15), 0 6px 16px rgb(0 0 0 / 0.3); }
+.id-card__logo { box-shadow: 0 0 0 2px rgb(255 255 255 / 0.6); }
+.doc__brand .logo { box-shadow: 0 0 0 1px #e2e8f0; }
+
+.btn--whatsapp { background: #16a34a; color: #fff; box-shadow: 0 2px 8px rgb(22 163 74 / 0.3); }
+.btn--whatsapp:hover:not(:disabled) { background: #15803d; }
+.btn--whatsapp-ghost { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+.btn--whatsapp-ghost:hover { background: #dcfce7; }
+.icon-btn--whatsapp { color: #16a34a; }
+.icon-btn--whatsapp:hover:not(:disabled) { background: #f0fdf4; color: #15803d; }
+
+.invoice-box { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
+.invoice-box__total { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--primary-50); }
+.invoice-box__total b { font-size: 1.3rem; color: var(--primary); }
+.invoice-box__msg { margin: 0; padding: 14px 16px; white-space: pre-wrap; font-family: var(--font); font-size: 0.88rem; line-height: 1.7; background: #f7fdf9; color: var(--text); max-height: 260px; overflow: auto; }
+.invoice-actions { display: flex; flex-direction: column; gap: 8px; }
+.invoice-actions .btn { width: 100%; padding: 12px 16px; }
+
+.doc__kv--compact { margin-bottom: 16px; }
+.doc__kv--compact th, .doc__kv--compact td { padding: 5px 0; }
+.doc__summary--3 { grid-template-columns: repeat(3, 1fr); }
+.receipt__amount--due strong { color: #dc2626; }
+.invoice__ok { background: #ecfdf5; color: #059669; font-weight: 700; border-radius: 10px; padding: 12px 16px; text-align: center; }
+.invoice__foot { margin: 6px 0 0; text-align: center; color: #475569; border-top: 1px dashed #cbd5e1; padding-top: 12px; }

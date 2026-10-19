@@ -20,7 +20,7 @@ export default function Teachers() {
         {state.teachers.length ? (
           <div className="table-wrap">
             <table className="table">
-              <thead><tr><th>المعلم</th><th>المادة</th><th>الفصول</th><th>الهاتف</th><th></th></tr></thead>
+              <thead><tr><th>المعلم</th><th>المادة</th><th>الأقسام</th><th>الهاتف</th><th></th></tr></thead>
               <tbody>
                 {state.teachers.map((t) => (
                   <tr key={t.id}>

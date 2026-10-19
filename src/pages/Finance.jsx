@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { AlertTriangle, CircleDollarSign, FileText, Percent, Plus, Receipt as ReceiptIcon, Search, Wallet } from 'lucide-react'
+import { AlertTriangle, CircleDollarSign, FileText, MessageCircle, Percent, Plus, Receipt as ReceiptIcon, Search, Wallet } from 'lucide-react'
 import { useStore } from '../store/AppStore.jsx'
 import { account, ACCOUNT_STATUS, classOf, receiptNo } from '../utils/finance.js'
 import { fmtDate, money } from '../utils/format.js'
 import { Avatar, Badge, Empty, Modal, PageHeader, Progress, StatCard } from '../components/ui.jsx'
 import { PaymentForm } from '../components/forms.jsx'
 import { useDocs } from '../components/useDocs.jsx'
+import InvoiceModal from '../components/InvoiceModal.jsx'
 
 export default function Finance() {
   const store = useStore()
@@ -18,6 +19,7 @@ export default function Finance() {
   const status = params.get('status') ?? ''
   const [query, setQuery] = useState('')
   const [payFor, setPayFor] = useState(null)
+  const [invoiceFor, setInvoiceFor] = useState(null)
 
   const setParam = (key, value) => {
     const next = new URLSearchParams(params)
@@ -96,6 +98,9 @@ export default function Finance() {
                       </td>
                       <td><Badge tone={ACCOUNT_STATUS[acc.status].tone}>{ACCOUNT_STATUS[acc.status].label}</Badge></td>
                       <td className="row-actions">
+                        <button className="icon-btn icon-btn--whatsapp" title="فاتورة واتساب" onClick={() => setInvoiceFor(s)}>
+                          <MessageCircle size={18} />
+                        </button>
                         <button className="icon-btn" title="تسجيل دفعة" onClick={() => setPayFor(s.id)} disabled={acc.remaining === 0}>
                           <Plus size={18} />
                         </button>
@@ -140,6 +145,7 @@ export default function Finance() {
         )}
       </div>
 
+      {invoiceFor && <InvoiceModal student={invoiceFor} onClose={() => setInvoiceFor(null)} />}
       {payFor && (
         <Modal title="تسجيل دفعة" onClose={() => setPayFor(null)}>
           <PaymentForm

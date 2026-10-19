@@ -18,7 +18,7 @@ function ClassForm({ initial, onSubmit, onCancel }) {
       }}
     >
       <div className="form-grid">
-        <label className="field"><span>اسم الفصل</span><input value={form.name} onChange={set('name')} required autoFocus /></label>
+        <label className="field"><span>اسم القسم</span><input value={form.name} onChange={set('name')} required autoFocus /></label>
         <label className="field">
           <span>المرحلة</span>
           <select value={form.level} onChange={set('level')}>
@@ -52,8 +52,8 @@ export default function Classes() {
 
   return (
     <>
-      <PageHeader title="الفصول" subtitle="الفصول الدراسية والرسوم السنوية لكل فصل">
-        <button className="btn btn--primary" onClick={() => setModal('new')}><Plus size={18} /> إضافة فصل</button>
+      <PageHeader title="الأقسام" subtitle="الأقسام والرسوم السنوية لكل قسم">
+        <button className="btn btn--primary" onClick={() => setModal('new')}><Plus size={18} /> إضافة قسم</button>
       </PageHeader>
 
       <div className="class-grid">
@@ -70,9 +70,9 @@ export default function Classes() {
                   <button className="icon-btn" title="تعديل" onClick={() => setModal(c)}><Pencil size={17} /></button>
                   <button
                     className="icon-btn icon-btn--danger"
-                    title={count ? 'لا يمكن حذف فصل فيه طلاب' : 'حذف'}
+                    title={count ? 'لا يمكن حذف قسم فيه طلاب' : 'حذف'}
                     disabled={count > 0}
-                    onClick={() => confirm(`حذف الفصل ${c.name}؟`) && store.deleteClass(c.id)}
+                    onClick={() => confirm(`حذف القسم ${c.name}؟`) && store.deleteClass(c.id)}
                   >
                     <Trash2 size={17} />
                   </button>
@@ -89,7 +89,7 @@ export default function Classes() {
       </div>
 
       {modal && (
-        <Modal title={modal === 'new' ? 'إضافة فصل' : `تعديل ${modal.name}`} onClose={() => setModal(null)}>
+        <Modal title={modal === 'new' ? 'إضافة قسم' : `تعديل ${modal.name}`} onClose={() => setModal(null)}>
           <ClassForm
             initial={modal === 'new' ? null : modal}
             onCancel={() => setModal(null)}
