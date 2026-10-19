@@ -19,7 +19,7 @@ function saveBlob(blob, filename) {
 
 // نافذة الفاتورة: تجهّز ملف PDF ثم ترسله لولي الأمر على واتساب
 export default function InvoiceModal({ student, onClose }) {
-  const { state } = useStore()
+  const { state, markInvoiceSent } = useStore()
   const { exportPdf } = usePdf()
   const [file, setFile] = useState(null)
   const [note, setNote] = useState('')
@@ -45,6 +45,7 @@ export default function InvoiceModal({ student, onClose }) {
   async function shareFile() {
     try {
       await navigator.share({ files: [file], text })
+      markInvoiceSent(inv.number)
     } catch (err) {
       if (err?.name !== 'AbortError') setNote('تعذّرت المشاركة. استخدم زر تحميل الفاتورة ثم أرفقها في واتساب.')
     }
@@ -66,7 +67,7 @@ export default function InvoiceModal({ student, onClose }) {
             <Send size={18} /> إرسال الفاتورة PDF (واتساب)
           </button>
         )}
-        <a className="btn btn--whatsapp-ghost" href={waLink(number, text)} target="_blank" rel="noreferrer">
+        <a className="btn btn--whatsapp-ghost" href={waLink(number, text)} target="_blank" rel="noreferrer" onClick={() => markInvoiceSent(inv.number)}>
           <MessageCircle size={18} /> رسالة واتساب لولي الأمر {number && <span dir="ltr">+{number}</span>}
         </a>
         <button className="btn btn--ghost" onClick={() => saveBlob(file, filename)} disabled={!file}>

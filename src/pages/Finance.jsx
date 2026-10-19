@@ -43,6 +43,7 @@ export default function Finance() {
   return (
     <>
       <PageHeader title="المالية" subtitle="الرسوم الدراسية والأقساط والمدفوعات">
+        <Link to="/invoices" className="btn btn--whatsapp-ghost"><MessageCircle size={18} /> فواتير الدفع</Link>
         <button className="btn btn--primary" onClick={() => setPayFor('any')}>
           <Plus size={18} /> تسجيل دفعة
         </button>

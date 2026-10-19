@@ -34,6 +34,8 @@ export function seed() {
       { id: 7, name: 'محمد الطالب', gender: 'ذكر', birthDate: '2008-02-11', classId: 1, guardianName: 'الطالب أحمد', guardianPhone: '22777777', discount: 0, photo: '', enrollDate: '2026-09-23' },
       { id: 8, name: 'آمنة يحيى', gender: 'أنثى', birthDate: '2009-10-05', classId: 3, guardianName: 'يحيى عثمان', guardianPhone: '36888888', discount: 0, photo: '', enrollDate: '2026-09-24' },
     ],
+    // الفواتير التي أُرسلت على واتساب: { رقم الفاتورة: تاريخ الإرسال }
+    invoicesSent: {},
     payments: [
       { id: 1, studentId: 1, amount: 20000, date: '2026-09-20', method: 'نقدًا', note: 'شهرا أكتوبر ونوفمبر' },
       { id: 2, studentId: 2, amount: 9000, date: '2026-09-21', method: 'تحويل بنكي', note: '' },

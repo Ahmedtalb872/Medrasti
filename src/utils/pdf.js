@@ -57,3 +57,17 @@ export async function cardsToPdf(els) {
   }
   return pdf
 }
+
+// كل عنصر في صفحة مستقلة بعرض محدد (مثل كل الفواتير في ملف واحد)
+export async function pagesToPdf(els, widthMm = 148) {
+  let pdf = null
+  const font = els.length ? await prepare(els[0]) : ''
+  for (const el of els) {
+    const heightMm = (widthMm * el.offsetHeight) / el.offsetWidth
+    const size = [widthMm, heightMm]
+    if (!pdf) pdf = new jsPDF({ unit: 'mm', format: size, orientation: 'portrait' })
+    else pdf.addPage(size, 'portrait')
+    pdf.addImage(await capture(el, font), 'PNG', 0, 0, widthMm, heightMm)
+  }
+  return pdf
+}

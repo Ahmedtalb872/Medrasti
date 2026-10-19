@@ -15,9 +15,11 @@ export function PdfProvider({ children }) {
     const nodes = [...stageRef.current.children]
     // مكتبة PDF كبيرة الحجم، لذلك تُحمَّل فقط عند الحاجة
     import('../utils/pdf.js')
-      .then(({ cardsToPdf, elementToPdf }) =>
-        job.kind === 'cards' ? cardsToPdf(nodes) : elementToPdf(nodes[0], job.options),
-      )
+      .then(({ cardsToPdf, elementToPdf, pagesToPdf }) => {
+        if (job.kind === 'cards') return cardsToPdf(nodes)
+        if (job.kind === 'pages') return pagesToPdf(nodes, job.options.widthMm)
+        return elementToPdf(nodes[0], job.options)
+      })
       .then((pdf) => {
         // asBlob: يعيد الملف بدل تحميله (لمشاركته على واتساب مثلًا)
         if (job.options.asBlob) return job.resolve(pdf.output('blob'))
