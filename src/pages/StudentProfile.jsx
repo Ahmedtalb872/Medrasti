@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowRight, FileText, IdCard, Pencil, Plus, Receipt as ReceiptIcon, Trash2 } from 'lucide-react'
+import { ArrowRight, FileText, IdCard, MessageCircle, Pencil, Plus, Receipt as ReceiptIcon, Trash2 } from 'lucide-react'
 import { useStore } from '../store/AppStore.jsx'
 import { account, ACCOUNT_STATUS, classOf, INSTALLMENT_STATUS, receiptNo, studentNo } from '../utils/finance.js'
 import { fmtDate, money } from '../utils/format.js'
 import { Badge, Empty, Modal, PageHeader, Progress } from '../components/ui.jsx'
 import { PaymentForm, StudentForm } from '../components/forms.jsx'
 import StudentCard from '../components/StudentCard.jsx'
+import InvoiceModal from '../components/InvoiceModal.jsx'
 import { useDocs } from '../components/useDocs.jsx'
 
 export default function StudentProfile() {
@@ -62,9 +63,9 @@ export default function StudentProfile() {
             <Badge tone={status.tone}>{status.label}</Badge>
           </div>
           <div className="money-grid">
-            <div><span>الرسوم السنوية</span><b>{money(acc.fee, currency)}</b></div>
+            <div><span>الرسوم الشهرية</span><b>{money(acc.monthly, currency)}</b></div>
             <div><span>الخصم</span><b>{Number(student.discount) || 0}%</b></div>
-            <div><span>المستحق</span><b>{money(acc.due, currency)}</b></div>
+            <div><span>مستحق السنة</span><b>{money(acc.due, currency)}</b></div>
             <div className="is-success"><span>المدفوع</span><b>{money(acc.paid, currency)}</b></div>
             <div className="is-danger"><span>المتبقي</span><b>{money(acc.remaining, currency)}</b></div>
             <div className={acc.overdueAmount ? 'is-danger' : ''}><span>المتأخر</span><b>{money(acc.overdueAmount, currency)}</b></div>
@@ -72,6 +73,9 @@ export default function StudentProfile() {
           <Progress value={acc.progress} tone={acc.status === 'overdue' ? 'danger' : 'success'} />
           <div className="muted small">تم سداد {acc.progress}% من الرسوم</div>
           <div className="btn-row">
+            <button className="btn btn--whatsapp" onClick={() => setModal('invoice')}>
+              <MessageCircle size={18} /> فاتورة واتساب
+            </button>
             <button className="btn btn--primary" onClick={() => setModal('pay')} disabled={acc.remaining === 0}>
               <Plus size={18} /> تسجيل دفعة
             </button>
@@ -151,6 +155,7 @@ export default function StudentProfile() {
           />
         </Modal>
       )}
+      {modal === 'invoice' && <InvoiceModal student={student} onClose={() => setModal(null)} />}
       {modal === 'pay' && (
         <Modal title={`تسجيل دفعة — ${student.name}`} onClose={() => setModal(null)}>
           <PaymentForm

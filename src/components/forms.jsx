@@ -75,11 +75,11 @@ export function StudentForm({ initial, onSubmit, onCancel }) {
         <Field label="تاريخ الميلاد">
           <input type="date" value={form.birthDate} onChange={set('birthDate')} />
         </Field>
-        <Field label="الفصل">
+        <Field label="القسم">
           <select value={form.classId ?? ''} onChange={set('classId')} required>
             {state.classes.map((c) => (
               <option key={c.id} value={c.id}>
-                {c.name} — {money(c.fee, state.settings.currency)}
+                {c.name} — {money(c.fee, state.settings.currency)} شهريًا
               </option>
             ))}
           </select>

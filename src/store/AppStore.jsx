@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useRef,
 import { seed } from '../data/seed.js'
 import { todayIso } from '../utils/format.js'
 
-const KEY = 'medrasti:data:v1'
+const KEY = 'medrasti:data:v2'
 const StoreContext = createContext(null)
 
 function load() {
@@ -69,6 +69,8 @@ export function AppProvider({ children }) {
       addClass: (data) => add('classes', data),
       updateClass: (id, data) => update('classes', id, data),
       deleteClass: (id) => remove('classes', id),
+      markInvoiceSent: (number) =>
+        setState((s) => ({ ...s, invoicesSent: { ...s.invoicesSent, [number]: todayIso() } })),
       updateSettings: (data) => setState((s) => ({ ...s, settings: { ...s.settings, ...data } })),
       resetDemo: () => setState(seed()),
     }

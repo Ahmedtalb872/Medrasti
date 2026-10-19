@@ -16,7 +16,7 @@ async function prepare(el) {
 }
 
 // يحوّل عنصرًا واحدًا إلى ملف PDF بعرض محدد بالمليمتر، والارتفاع حسب المحتوى
-export async function elementToPdf(el, filename, { widthMm = 210, minHeightMm = 0 } = {}) {
+export async function elementToPdf(el, { widthMm = 210, minHeightMm = 0 } = {}) {
   const font = await prepare(el)
   const img = await capture(el, font)
   const ratio = el.offsetHeight / el.offsetWidth
@@ -28,11 +28,11 @@ export async function elementToPdf(el, filename, { widthMm = 210, minHeightMm = 
     orientation: widthMm > pageH ? 'landscape' : 'portrait',
   })
   pdf.addImage(img, 'PNG', 0, 0, widthMm, heightMm)
-  pdf.save(filename)
+  return pdf
 }
 
 // يضع عدة بطاقات على صفحات A4 (8 بطاقات في الصفحة) مع خطوط قص خفيفة
-export async function cardsToPdf(els, filename) {
+export async function cardsToPdf(els) {
   const pdf = new jsPDF({ unit: 'mm', format: 'a4' })
   const cols = 2
   const rows = 4
@@ -55,5 +55,19 @@ export async function cardsToPdf(els, filename) {
     pdf.roundedRect(x - 0.3, y - 0.3, CARD_MM.w + 0.6, CARD_MM.h + 0.6, 3, 3)
     pdf.addImage(img, 'PNG', x, y, CARD_MM.w, CARD_MM.h)
   }
-  pdf.save(filename)
+  return pdf
+}
+
+// كل عنصر في صفحة مستقلة بعرض محدد (مثل كل الفواتير في ملف واحد)
+export async function pagesToPdf(els, widthMm = 148) {
+  let pdf = null
+  const font = els.length ? await prepare(els[0]) : ''
+  for (const el of els) {
+    const heightMm = (widthMm * el.offsetHeight) / el.offsetWidth
+    const size = [widthMm, heightMm]
+    if (!pdf) pdf = new jsPDF({ unit: 'mm', format: size, orientation: 'portrait' })
+    else pdf.addPage(size, 'portrait')
+    pdf.addImage(await capture(el, font), 'PNG', 0, 0, widthMm, heightMm)
+  }
+  return pdf
 }

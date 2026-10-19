@@ -1,5 +1,5 @@
 import { QRCodeSVG } from 'qrcode.react'
-import { School } from 'lucide-react'
+import Logo from './Logo.jsx'
 import { useStore } from '../store/AppStore.jsx'
 import { classOf, studentNo } from '../utils/finance.js'
 import { Avatar } from './ui.jsx'
@@ -12,9 +12,7 @@ export default function StudentCard({ student }) {
   return (
     <div className="id-card">
       <div className="id-card__band">
-        <div className="id-card__logo">
-          <School size={20} />
-        </div>
+        <Logo size={40} className="id-card__logo" />
         <div className="id-card__school">
           <strong>{settings.schoolName}</strong>
           <span>بطاقة طالب · <bdi dir="ltr">{settings.academicYear}</bdi></span>
@@ -29,7 +27,7 @@ export default function StudentCard({ student }) {
             <b dir="ltr">{no}</b>
           </div>
           <div className="id-card__row">
-            <span>الفصل</span>
+            <span>القسم</span>
             <b>{classOf(state, student)?.name ?? '-'}</b>
           </div>
           <div className="id-card__row">
@@ -42,7 +40,7 @@ export default function StudentCard({ student }) {
         </div>
       </div>
       <div className="id-card__foot">
-        <span>{settings.address}</span>
+        <span>{settings.address || 'للتواصل'}</span>
         <span dir="ltr">{settings.phone}</span>
       </div>
     </div>

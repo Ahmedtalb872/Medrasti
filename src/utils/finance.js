@@ -29,8 +29,13 @@ export function receiptNo(payment) {
   return `R-${String(payment.id).padStart(6, '0')}`
 }
 
-export function annualFee(state, student) {
+// رسوم القسم شهرية، والرسوم السنوية = الرسوم الشهرية × عدد الأقساط
+export function monthlyFee(state, student) {
   return classOf(state, student)?.fee ?? 0
+}
+
+export function annualFee(state, student) {
+  return monthlyFee(state, student) * Math.max(1, Number(state.settings.installments) || 1)
 }
 
 export function studentDue(state, student) {
@@ -84,6 +89,7 @@ export function account(state, student) {
   else if (paid > 0) status = 'ontrack'
   return {
     fee: annualFee(state, student),
+    monthly: monthlyFee(state, student),
     due,
     paid,
     remaining,
@@ -101,4 +107,23 @@ export function balanceAfter(state, payment) {
   if (!student) return 0
   const upTo = studentPayments(state, student.id).filter((p) => byDate(p, payment) <= 0)
   return Math.max(0, studentDue(state, student) - sum(upTo))
+}
+
+// الفاتورة: الأقساط المستحقة حتى نهاية الشهر الحالي ولم تُسدَّد بعد
+export function invoice(state, student, today = new Date()) {
+  const acc = account(state, student)
+  const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+  const lines = acc.plan
+    .filter((i) => i.paid < i.amount && new Date(`${i.dueDate}T00:00:00`) <= monthEnd)
+    .map((i) => ({ ...i, open: i.amount - i.paid }))
+  const next = acc.plan.find((i) => i.paid < i.amount && !lines.some((l) => l.index === i.index))
+  const dueNow = sum(lines.map((l) => ({ amount: l.open })))
+  const month = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}`
+  return {
+    ...acc,
+    number: `INV-${month}-${String(student.id).padStart(4, '0')}`,
+    lines,
+    dueNow,
+    next,
+  }
 }

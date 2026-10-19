@@ -18,7 +18,7 @@ export default function PaymentCard({ student }) {
         <div className="doc__student-grid">
           <div><span>الاسم</span><b>{student.name}</b></div>
           <div><span>رقم الطالب</span><b dir="ltr">{studentNo(state, student)}</b></div>
-          <div><span>الفصل</span><b>{classOf(state, student)?.name ?? '-'}</b></div>
+          <div><span>القسم</span><b>{classOf(state, student)?.name ?? '-'}</b></div>
           <div><span>ولي الأمر</span><b>{student.guardianName || '-'}</b></div>
           <div><span>الهاتف</span><b dir="ltr">{student.guardianPhone || '-'}</b></div>
           <div><span>تاريخ الإصدار</span><b>{fmtDate(todayIso())}</b></div>
@@ -26,9 +26,9 @@ export default function PaymentCard({ student }) {
       </div>
 
       <div className="doc__summary">
-        <div><span>الرسوم السنوية</span><b>{money(acc.fee, currency)}</b></div>
+        <div><span>الرسوم الشهرية</span><b>{money(acc.monthly, currency)}</b></div>
         <div><span>الخصم</span><b>{Number(student.discount) || 0}%</b></div>
-        <div><span>المستحق</span><b>{money(acc.due, currency)}</b></div>
+        <div><span>مستحق السنة</span><b>{money(acc.due, currency)}</b></div>
         <div className="is-success"><span>المدفوع</span><b>{money(acc.paid, currency)}</b></div>
         <div className="is-danger"><span>المتبقي</span><b>{money(acc.remaining, currency)}</b></div>
       </div>

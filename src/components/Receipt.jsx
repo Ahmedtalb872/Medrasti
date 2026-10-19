@@ -20,7 +20,7 @@ export default function Receipt({ payment }) {
         <tbody>
           <tr><th>اسم الطالب</th><td>{student.name}</td></tr>
           <tr><th>رقم الطالب</th><td dir="ltr">{studentNo(state, student)}</td></tr>
-          <tr><th>الفصل</th><td>{classOf(state, student)?.name ?? '-'}</td></tr>
+          <tr><th>القسم</th><td>{classOf(state, student)?.name ?? '-'}</td></tr>
           <tr><th>تاريخ الدفع</th><td>{fmtDate(payment.date)}</td></tr>
           <tr><th>طريقة الدفع</th><td>{payment.method}</td></tr>
           {payment.note && <tr><th>ملاحظة</th><td>{payment.note}</td></tr>}
