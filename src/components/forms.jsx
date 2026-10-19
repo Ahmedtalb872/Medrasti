@@ -79,7 +79,7 @@ export function StudentForm({ initial, onSubmit, onCancel }) {
           <select value={form.classId ?? ''} onChange={set('classId')} required>
             {state.classes.map((c) => (
               <option key={c.id} value={c.id}>
-                {c.name} — {money(c.fee, state.settings.currency)}
+                {c.name} — {money(c.fee, state.settings.currency)} شهريًا
               </option>
             ))}
           </select>

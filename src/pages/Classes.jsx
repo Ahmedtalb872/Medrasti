@@ -6,7 +6,7 @@ import { Modal, PageHeader } from '../components/ui.jsx'
 
 function ClassForm({ initial, onSubmit, onCancel }) {
   const { state } = useStore()
-  const [form, setForm] = useState(initial ?? { name: '', level: 'ابتدائي', teacherId: '', fee: '' })
+  const [form, setForm] = useState(initial ?? { name: '', level: 'ثانوي', teacherId: '', fee: '' })
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value })
   return (
     <form
@@ -33,7 +33,7 @@ function ClassForm({ initial, onSubmit, onCancel }) {
           </select>
         </label>
         <label className="field">
-          <span>الرسوم السنوية ({state.settings.currency})</span>
+          <span>الرسوم الشهرية ({state.settings.currency})</span>
           <input type="number" min="0" value={form.fee} onChange={set('fee')} required />
         </label>
       </div>
@@ -52,7 +52,7 @@ export default function Classes() {
 
   return (
     <>
-      <PageHeader title="الأقسام" subtitle="الأقسام والرسوم السنوية لكل قسم">
+      <PageHeader title="الأقسام" subtitle="الأقسام والرسوم الشهرية لكل قسم">
         <button className="btn btn--primary" onClick={() => setModal('new')}><Plus size={18} /> إضافة قسم</button>
       </PageHeader>
 
@@ -78,7 +78,7 @@ export default function Classes() {
                   </button>
                 </div>
               </div>
-              <div className="class-card__fee">{money(c.fee, state.settings.currency)}<span> / سنويًا</span></div>
+              <div className="class-card__fee">{money(c.fee, state.settings.currency)}<span> / شهريًا</span></div>
               <div className="class-card__meta">
                 <span><Users size={15} /> {count} طلاب</span>
                 <span>{state.teachers.find((t) => t.id === c.teacherId)?.name ?? 'بدون معلم'}</span>

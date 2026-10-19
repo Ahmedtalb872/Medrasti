@@ -21,7 +21,7 @@ export function invoiceMessage(state, student, inv) {
   ]
   if (inv.dueNow > 0) {
     lines.push(`المبلغ المطلوب الآن: *${money(inv.dueNow, currency)}*`)
-    lines.push(`عن أقساط: ${inv.lines.map((l) => l.label).join('، ')}`)
+    lines.push(`عن شهر: ${inv.lines.map((l) => l.label).join('، ')}`)
   } else if (inv.next) {
     lines.push('لا توجد أقساط مستحقة حاليًا ✅')
     lines.push(`القسط القادم: ${inv.next.label} — ${money(inv.next.amount - inv.next.paid, currency)}`)

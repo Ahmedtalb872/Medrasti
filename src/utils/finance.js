@@ -29,8 +29,13 @@ export function receiptNo(payment) {
   return `R-${String(payment.id).padStart(6, '0')}`
 }
 
-export function annualFee(state, student) {
+// رسوم القسم شهرية، والرسوم السنوية = الرسوم الشهرية × عدد الأقساط
+export function monthlyFee(state, student) {
   return classOf(state, student)?.fee ?? 0
+}
+
+export function annualFee(state, student) {
+  return monthlyFee(state, student) * Math.max(1, Number(state.settings.installments) || 1)
 }
 
 export function studentDue(state, student) {
@@ -84,6 +89,7 @@ export function account(state, student) {
   else if (paid > 0) status = 'ontrack'
   return {
     fee: annualFee(state, student),
+    monthly: monthlyFee(state, student),
     due,
     paid,
     remaining,

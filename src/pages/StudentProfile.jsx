@@ -63,9 +63,9 @@ export default function StudentProfile() {
             <Badge tone={status.tone}>{status.label}</Badge>
           </div>
           <div className="money-grid">
-            <div><span>الرسوم السنوية</span><b>{money(acc.fee, currency)}</b></div>
+            <div><span>الرسوم الشهرية</span><b>{money(acc.monthly, currency)}</b></div>
             <div><span>الخصم</span><b>{Number(student.discount) || 0}%</b></div>
-            <div><span>المستحق</span><b>{money(acc.due, currency)}</b></div>
+            <div><span>مستحق السنة</span><b>{money(acc.due, currency)}</b></div>
             <div className="is-success"><span>المدفوع</span><b>{money(acc.paid, currency)}</b></div>
             <div className="is-danger"><span>المتبقي</span><b>{money(acc.remaining, currency)}</b></div>
             <div className={acc.overdueAmount ? 'is-danger' : ''}><span>المتأخر</span><b>{money(acc.overdueAmount, currency)}</b></div>

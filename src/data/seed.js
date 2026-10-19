@@ -20,9 +20,9 @@ export function seed() {
       { id: 5, name: 'زينب الحسن', subject: 'التربية الإسلامية', phone: '0600000005' },
     ],
     classes: [
-      { id: 1, name: 'MPIC', level: 'ثانوي', teacherId: 2, fee: 54000 },
-      { id: 2, name: 'MPI', level: 'ثانوي', teacherId: 3, fee: 49500 },
-      { id: 3, name: 'PC', level: 'ثانوي', teacherId: 4, fee: 45000 },
+      { id: 1, name: 'MPIC', level: 'ثانوي', teacherId: 2, fee: 10000 },
+      { id: 2, name: 'MPI', level: 'ثانوي', teacherId: 3, fee: 10000 },
+      { id: 3, name: 'PC', level: 'ثانوي', teacherId: 4, fee: 10000 },
     ],
     students: [
       { id: 1, name: 'أحمد علي', gender: 'ذكر', birthDate: '2009-03-14', classId: 1, guardianName: 'علي محمد', guardianPhone: '22111111', discount: 0, photo: '', enrollDate: '2026-09-20' },
@@ -35,10 +35,10 @@ export function seed() {
       { id: 8, name: 'آمنة يحيى', gender: 'أنثى', birthDate: '2009-10-05', classId: 3, guardianName: 'يحيى عثمان', guardianPhone: '36888888', discount: 0, photo: '', enrollDate: '2026-09-24' },
     ],
     payments: [
-      { id: 1, studentId: 1, amount: 12000, date: '2026-09-20', method: 'نقدًا', note: 'قسطا أكتوبر ونوفمبر' },
-      { id: 2, studentId: 2, amount: 5400, date: '2026-09-21', method: 'تحويل بنكي', note: '' },
-      { id: 3, studentId: 3, amount: 49500, date: '2026-09-21', method: 'تحويل بنكي', note: 'دفع كامل السنة' },
-      { id: 4, studentId: 4, amount: 5500, date: '2026-10-05', method: 'نقدًا', note: '' },
+      { id: 1, studentId: 1, amount: 20000, date: '2026-09-20', method: 'نقدًا', note: 'شهرا أكتوبر ونوفمبر' },
+      { id: 2, studentId: 2, amount: 9000, date: '2026-09-21', method: 'تحويل بنكي', note: '' },
+      { id: 3, studentId: 3, amount: 90000, date: '2026-09-21', method: 'تحويل بنكي', note: 'دفع كامل السنة' },
+      { id: 4, studentId: 4, amount: 10000, date: '2026-10-05', method: 'نقدًا', note: '' },
       { id: 5, studentId: 5, amount: 8000, date: '2026-09-25', method: 'بطاقة', note: '' },
       { id: 6, studentId: 6, amount: 10000, date: '2026-10-02', method: 'نقدًا', note: '' },
     ],
