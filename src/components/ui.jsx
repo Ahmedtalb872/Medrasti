@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
-import { X } from 'lucide-react'
+import { ArrowDownLeft, ArrowUpLeft, X } from 'lucide-react'
 import { initials } from '../utils/format.js'
 
-const AVATAR_COLORS = ['#2563eb', '#7c3aed', '#db2777', '#ea580c', '#0d9488', '#4f46e5', '#0891b2', '#65a30d']
+const AVATAR_COLORS = ['#6d28d9', '#7c3aed', '#db2777', '#ea580c', '#0d9488', '#4f46e5', '#0891b2', '#65a30d']
 
 export function Avatar({ student, size = 40, square = false }) {
   const style = {
@@ -46,17 +46,28 @@ export function PageHeader({ title, subtitle, children }) {
   )
 }
 
-export function StatCard({ icon: Icon, label, value, hint, tone = 'primary' }) {
+// trend: { dir: 'up' | 'down', text, tone } يظهر سهمًا ملونًا قبل التلميح
+export function StatCard({ icon: Icon, label, value, hint, trend, tone = 'primary' }) {
+  const Arrow = trend?.dir === 'down' ? ArrowDownLeft : ArrowUpLeft
   return (
     <div className="stat-card">
-      <div className={`stat-card__icon tone-${tone}`}>
-        <Icon size={22} />
-      </div>
-      <div>
+      <div className="stat-card__top">
         <div className="stat-card__label">{label}</div>
-        <div className="stat-card__value">{value}</div>
-        {hint && <div className="stat-card__hint">{hint}</div>}
+        <div className={`stat-card__icon tone-${tone}`}>
+          <Icon size={22} />
+        </div>
       </div>
+      <div className="stat-card__value">{value}</div>
+      {(hint || trend) && (
+        <div className="stat-card__hint">
+          {trend && (
+            <b className={`trend trend--${trend.tone || (trend.dir === 'down' ? 'danger' : 'success')}`}>
+              <Arrow size={15} /> {trend.text}
+            </b>
+          )}
+          {hint && <span>{hint}</span>}
+        </div>
+      )}
     </div>
   )
 }

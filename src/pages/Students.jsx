@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { Eye, IdCard, MessageCircle, Plus, Search } from 'lucide-react'
 import { useStore } from '../store/AppStore.jsx'
 import { account, ACCOUNT_STATUS, classOf, studentNo } from '../utils/finance.js'
@@ -13,7 +13,8 @@ export default function Students() {
   const { state } = store
   const docs = useDocs()
   const navigate = useNavigate()
-  const [query, setQuery] = useState('')
+  const [params] = useSearchParams()
+  const [query, setQuery] = useState(params.get('q') ?? '')
   const [classId, setClassId] = useState('')
   const [adding, setAdding] = useState(false)
   const [invoiceFor, setInvoiceFor] = useState(null)

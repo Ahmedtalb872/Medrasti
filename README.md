@@ -1,6 +1,6 @@
 # مدرستي (Medrasti) — Epsilon
 
-نظام إدارة مدرسة **Epsilon** (الأقسام: MPIC و MPI و PC)، مبني بـ React و Vite، بواجهة عربية كاملة (من اليمين لليسار) وخط IBM Plex Sans Arabic.
+نظام إدارة مدرسة **Epsilon** (الأقسام: MPIC و MPI و PC)، مبني بـ React و Vite، بواجهة عربية كاملة (من اليمين لليسار) وخط Cairo.
 
 الموقع: https://ahmedtalb872.github.io/Medrasti/
 
