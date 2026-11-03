@@ -7,17 +7,21 @@ import '@fontsource/cairo/600.css'
 import '@fontsource/cairo/700.css'
 import './index.css'
 import App from './App.jsx'
-import { AppProvider } from './store/AppStore.jsx'
+import { LocalStore } from './store/AppStore.jsx'
+import CloudGate from './components/CloudGate.jsx'
+import { cloud } from './lib/supabase.js'
 import { PdfProvider } from './components/PdfProvider.jsx'
+
+const Store = cloud ? CloudGate : LocalStore
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <HashRouter>
-      <AppProvider>
+      <Store>
         <PdfProvider>
           <App />
         </PdfProvider>
-      </AppProvider>
+      </Store>
     </HashRouter>
   </StrictMode>,
 )

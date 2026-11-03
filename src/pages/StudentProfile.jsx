@@ -31,9 +31,9 @@ export default function StudentProfile() {
   const acc = account(state, student)
   const status = ACCOUNT_STATUS[acc.status]
 
-  function remove() {
+  async function remove() {
     if (confirm(`حذف الطالب ${student.name} وكل مدفوعاته؟`)) {
-      store.deleteStudent(student.id)
+      if ((await store.deleteStudent(student.id)) === null) return
       navigate('/students')
     }
   }
@@ -148,8 +148,8 @@ export default function StudentProfile() {
           <StudentForm
             initial={student}
             onCancel={() => setModal(null)}
-            onSubmit={(data) => {
-              store.updateStudent(student.id, data)
+            onSubmit={async (data) => {
+              if ((await store.updateStudent(student.id, data)) === null) return
               setModal(null)
             }}
           />
@@ -161,8 +161,9 @@ export default function StudentProfile() {
           <PaymentForm
             studentId={student.id}
             onCancel={() => setModal(null)}
-            onSubmit={(data) => {
-              const p = store.addPayment(data)
+            onSubmit={async (data) => {
+              const p = await store.addPayment(data)
+              if (!p) return
               setModal(null)
               docs.receipt(p)
             }}

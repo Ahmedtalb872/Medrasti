@@ -1,7 +1,9 @@
 import { NavLink } from 'react-router-dom'
-import { GraduationCap, IdCard, LayoutDashboard, ReceiptText, School, Settings, Users, Wallet } from 'lucide-react'
+import { GraduationCap, IdCard, LayoutDashboard, LogOut, ReceiptText, School, Settings, Users, Wallet } from 'lucide-react'
 import Logo from './Logo.jsx'
 import { useStore } from '../store/AppStore.jsx'
+
+const ROLES = { owner: 'مالك المدرسة', admin: 'مدير', accountant: 'محاسب', secretary: 'سكرتير' }
 
 const groups = [
   {
@@ -23,7 +25,7 @@ const groups = [
 ]
 
 export default function Sidebar() {
-  const { state } = useStore()
+  const { state, account } = useStore()
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -45,10 +47,29 @@ export default function Sidebar() {
       </nav>
       <div className="sidebar__foot">
         <Logo size={40} />
-        <div>
-          <b>الإدارة</b>
-          <span>العام الدراسي <bdi dir="ltr">{state.settings.academicYear}</bdi></span>
+        <div className="sidebar__who">
+          {account ? (
+            <>
+              <b>{ROLES[account.school.role] ?? 'عضو'}</b>
+              <span dir="ltr" title={account.email}>{account.email}</span>
+              {account.schools.length > 1 && (
+                <select value={account.school.id} onChange={(e) => account.switchSchool(e.target.value)} aria-label="المدرسة">
+                  {account.schools.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                </select>
+              )}
+            </>
+          ) : (
+            <>
+              <b>الإدارة</b>
+              <span>العام الدراسي <bdi dir="ltr">{state.settings.academicYear}</bdi></span>
+            </>
+          )}
         </div>
+        {account && (
+          <button className="sidebar__out" onClick={account.signOut} title="تسجيل الخروج" aria-label="تسجيل الخروج">
+            <LogOut size={20} />
+          </button>
+        )}
       </div>
     </aside>
   )
