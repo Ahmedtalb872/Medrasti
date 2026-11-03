@@ -13,15 +13,15 @@ export default function Settings() {
     setForm({ ...form, [k]: e.target.value })
   }
 
-  function save(e) {
+  async function save(e) {
     e.preventDefault()
-    store.updateSettings({
+    const ok = await store.updateSettings({
       ...form,
       startYear: Number(form.startYear),
       startMonth: Number(form.startMonth),
       installments: Math.min(12, Math.max(1, Number(form.installments) || 1)),
     })
-    setSaved(true)
+    if (ok !== null) setSaved(true)
   }
 
   function reset() {
@@ -58,7 +58,11 @@ export default function Settings() {
         </div>
 
         <div className="form-actions form-actions--split">
-          <button type="button" className="btn btn--danger-ghost" onClick={reset}><RotateCcw size={16} /> إعادة البيانات التجريبية</button>
+          {store.resetDemo ? (
+            <button type="button" className="btn btn--danger-ghost" onClick={reset}><RotateCcw size={16} /> إعادة البيانات التجريبية</button>
+          ) : (
+            <span />
+          )}
           <div className="btn-row">
             {saved && <span className="text-success">تم الحفظ ✓</span>}
             <button type="submit" className="btn btn--primary"><Save size={16} /> حفظ الإعدادات</button>

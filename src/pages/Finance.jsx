@@ -152,8 +152,9 @@ export default function Finance() {
           <PaymentForm
             studentId={payFor === 'any' ? undefined : payFor}
             onCancel={() => setPayFor(null)}
-            onSubmit={(data) => {
-              const p = store.addPayment(data)
+            onSubmit={async (data) => {
+              const p = await store.addPayment(data)
+              if (!p) return
               setPayFor(null)
               docs.receipt(p)
             }}

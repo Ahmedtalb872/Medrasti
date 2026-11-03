@@ -93,9 +93,9 @@ export default function Classes() {
           <ClassForm
             initial={modal === 'new' ? null : modal}
             onCancel={() => setModal(null)}
-            onSubmit={(data) => {
-              if (modal === 'new') store.addClass(data)
-              else store.updateClass(modal.id, data)
+            onSubmit={async (data) => {
+              const ok = modal === 'new' ? await store.addClass(data) : await store.updateClass(modal.id, data)
+              if (ok === null) return
               setModal(null)
             }}
           />

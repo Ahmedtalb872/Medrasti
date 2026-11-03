@@ -101,8 +101,9 @@ export default function Students() {
         <Modal title="إضافة طالب جديد" onClose={() => setAdding(false)} wide>
           <StudentForm
             onCancel={() => setAdding(false)}
-            onSubmit={(data) => {
-              const s = store.addStudent(data)
+            onSubmit={async (data) => {
+              const s = await store.addStudent(data)
+              if (!s) return
               setAdding(false)
               navigate(`/students/${s.id}`)
             }}

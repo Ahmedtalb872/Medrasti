@@ -52,10 +52,10 @@ export default function Teachers() {
         <Modal title="إضافة معلم" onClose={() => setAdding(false)}>
           <form
             className="form"
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault()
               if (!form.name.trim()) return
-              store.addTeacher({ ...form, name: form.name.trim() })
+              if (!(await store.addTeacher({ ...form, name: form.name.trim() }))) return
               setForm({ name: '', subject: '', phone: '' })
               setAdding(false)
             }}
