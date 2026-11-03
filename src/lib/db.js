@@ -2,8 +2,9 @@ import { supabase } from './supabase.js'
 
 // أسماء الحقول في الواجهة ← أسماء الأعمدة في قاعدة البيانات
 const FIELDS = {
-  teachers: { id: 'id', name: 'name', subject: 'subject', phone: 'phone' },
-  classes: { id: 'id', name: 'name', level: 'level', teacherId: 'teacher_id', fee: 'fee' },
+  branches: { id: 'id', name: 'name', address: 'address', phone: 'phone' },
+  teachers: { id: 'id', name: 'name', subject: 'subject', phone: 'phone', branchId: 'branch_id' },
+  classes: { id: 'id', name: 'name', level: 'level', teacherId: 'teacher_id', fee: 'fee', branchId: 'branch_id' },
   students: {
     id: 'id',
     name: 'name',
@@ -15,6 +16,7 @@ const FIELDS = {
     discount: 'discount',
     photo: 'photo',
     enrollDate: 'enroll_date',
+    branchId: 'branch_id',
   },
   payments: { id: 'id', studentId: 'student_id', amount: 'amount', date: 'date', method: 'method', note: 'note' },
 }
@@ -68,8 +70,8 @@ async function fetchAll(table, schoolId) {
 
 export async function loadSchool(schoolId) {
   const school = check(await supabase.from('schools').select('*').eq('id', schoolId).single())
-  const [teachers, classes, students, payments] = await Promise.all(
-    ['teachers', 'classes', 'students', 'payments'].map(async (t) => (await fetchAll(t, schoolId)).map((r) => fromRow(FIELDS[t], r))),
+  const [branches, teachers, classes, students, payments] = await Promise.all(
+    ['branches', 'teachers', 'classes', 'students', 'payments'].map(async (t) => (await fetchAll(t, schoolId)).map((r) => fromRow(FIELDS[t], r))),
   )
   const sent = []
   for (let from = 0; ; from += 1000) {
@@ -80,6 +82,7 @@ export async function loadSchool(schoolId) {
   const settings = Object.fromEntries(Object.entries(SETTINGS).map(([k, col]) => [k, school[col]]))
   return {
     settings,
+    branches,
     teachers,
     classes,
     students,
@@ -115,8 +118,8 @@ export async function updateSchool(schoolId, settings) {
 }
 
 export async function mySchools(userId) {
-  const rows = check(await supabase.from('school_members').select('school_id, role, schools(name)').eq('user_id', userId))
-  return rows.map((r) => ({ id: r.school_id, role: r.role, name: r.schools?.name ?? '' }))
+  const rows = check(await supabase.from('school_members').select('school_id, role, branch_id, schools(name)').eq('user_id', userId))
+  return rows.map((r) => ({ id: r.school_id, role: r.role, branchId: r.branch_id ?? null, name: r.schools?.name ?? '' }))
 }
 
 export async function createSchool(name) {

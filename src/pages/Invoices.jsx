@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CheckCheck, Download, FileText, ReceiptText, Search, Send, Wallet } from 'lucide-react'
 import { useStore } from '../store/AppStore.jsx'
-import { classOf, invoice } from '../utils/finance.js'
+import { ClassTag } from '../components/Branches.jsx'
+import { invoice } from '../utils/finance.js'
 import { fmtDate, money, MONTHS } from '../utils/format.js'
 import { Avatar, Badge, Empty, PageHeader, StatCard } from '../components/ui.jsx'
 import InvoiceModal from '../components/InvoiceModal.jsx'
@@ -81,7 +82,7 @@ export default function Invoices() {
                   <Avatar student={s} size={42} />
                   <div>
                     <b>{s.name}</b>
-                    <span>{classOf(state, s)?.name} · <span dir="ltr">{inv.number}</span></span>
+                    <span><ClassTag student={s} /> · <span dir="ltr">{inv.number}</span></span>
                   </div>
                 </Link>
                 <div className="invoice-row__amount">

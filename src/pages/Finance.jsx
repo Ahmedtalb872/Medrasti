@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { AlertTriangle, CircleDollarSign, FileText, MessageCircle, Percent, Plus, Receipt as ReceiptIcon, Search, Wallet } from 'lucide-react'
 import { useStore } from '../store/AppStore.jsx'
-import { account, ACCOUNT_STATUS, classOf, receiptNo } from '../utils/finance.js'
+import { ClassTag } from '../components/Branches.jsx'
+import { account, ACCOUNT_STATUS, receiptNo } from '../utils/finance.js'
 import { fmtDate, money } from '../utils/format.js'
 import { Avatar, Badge, Empty, Modal, PageHeader, Progress, StatCard } from '../components/ui.jsx'
 import { PaymentForm } from '../components/forms.jsx'
@@ -88,7 +89,7 @@ export default function Finance() {
                       <td>
                         <Link to={`/students/${s.id}`} className="person">
                           <Avatar student={s} size={34} />
-                          <div><b>{s.name}</b><span>{classOf(state, s)?.name}</span></div>
+                          <div><b>{s.name}</b><span><ClassTag student={s} /></span></div>
                         </Link>
                       </td>
                       <td>{money(acc.due, currency)}</td>

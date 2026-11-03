@@ -3,6 +3,7 @@ import { RotateCcw, Save } from 'lucide-react'
 import { useStore } from '../store/AppStore.jsx'
 import { MONTHS } from '../utils/format.js'
 import { PageHeader } from '../components/ui.jsx'
+import { BranchesPanel } from '../components/Branches.jsx'
 
 export default function Settings() {
   const store = useStore()
@@ -69,6 +70,7 @@ export default function Settings() {
           </div>
         </div>
       </form>
+      <BranchesPanel />
     </>
   )
 }

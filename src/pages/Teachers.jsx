@@ -2,12 +2,16 @@ import { useState } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
 import { useStore } from '../store/AppStore.jsx'
 import { Avatar, Empty, Modal, PageHeader } from '../components/ui.jsx'
+import { BranchField, useShowBranch } from '../components/Branches.jsx'
+import { branchName } from '../utils/branches.js'
 
 export default function Teachers() {
   const store = useStore()
-  const { state } = store
+  const { state, full, branch } = store
   const [adding, setAdding] = useState(false)
-  const [form, setForm] = useState({ name: '', subject: '', phone: '' })
+  const blank = { name: '', subject: '', phone: '', branchId: branch.current }
+  const [form, setForm] = useState(blank)
+  const showBranch = useShowBranch()
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value })
 
   return (
@@ -27,7 +31,10 @@ export default function Teachers() {
                     <td>
                       <div className="person">
                         <Avatar student={t} size={36} />
-                        <b>{t.name}</b>
+                        <div>
+                          <b>{t.name}</b>
+                          {showBranch && <span>{t.branchId ? branchName(full, t.branchId) : 'كل الفروع'}</span>}
+                        </div>
                       </div>
                     </td>
                     <td>{t.subject}</td>
@@ -56,7 +63,7 @@ export default function Teachers() {
               e.preventDefault()
               if (!form.name.trim()) return
               if (!(await store.addTeacher({ ...form, name: form.name.trim() }))) return
-              setForm({ name: '', subject: '', phone: '' })
+              setForm(blank)
               setAdding(false)
             }}
           >
@@ -64,6 +71,7 @@ export default function Teachers() {
               <label className="field field--full"><span>الاسم</span><input value={form.name} onChange={set('name')} required autoFocus /></label>
               <label className="field"><span>المادة</span><input value={form.subject} onChange={set('subject')} /></label>
               <label className="field"><span>الهاتف</span><input type="tel" dir="ltr" value={form.phone} onChange={set('phone')} /></label>
+              <BranchField allowAll value={form.branchId} onChange={(id) => setForm({ ...form, branchId: id })} />
             </div>
             <div className="form-actions">
               <button type="button" className="btn btn--ghost" onClick={() => setAdding(false)}>إلغاء</button>

@@ -3,6 +3,7 @@ import { GraduationCap, IdCard, LayoutDashboard, LogOut, ReceiptText, School, Se
 import Logo from './Logo.jsx'
 import { useStore } from '../store/AppStore.jsx'
 import { APP_LOGO, APP_NAME } from '../brand.js'
+import { BranchPicker } from './Branches.jsx'
 
 const ROLES = { owner: 'مالك المدرسة', admin: 'مدير', accountant: 'محاسب', secretary: 'سكرتير' }
 
@@ -36,6 +37,7 @@ export default function Sidebar() {
           <div className="brand__school">{state.settings.schoolName}</div>
         </div>
       </div>
+      <BranchPicker />
       <nav className="nav">
         {groups.map((g) => (
           <div key={g.title} className="nav__group">
