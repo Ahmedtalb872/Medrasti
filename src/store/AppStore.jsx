@@ -1,8 +1,9 @@
-import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { seed } from '../data/seed.js'
 import { todayIso } from '../utils/format.js'
 import { LOCAL_KEY } from '../lib/supabase.js'
 import * as db from '../lib/db.js'
+import { branchView, withBranches } from '../utils/branches.js'
 
 const StoreContext = createContext(null)
 
@@ -12,12 +13,41 @@ function load() {
     if (raw) {
       const saved = JSON.parse(raw)
       const base = seed()
-      return { ...base, ...saved, settings: { ...base.settings, ...saved.settings } }
+      return withBranches({ ...base, ...saved, branches: saved.branches, settings: { ...base.settings, ...saved.settings } })
     }
   } catch {
     // تجاهل البيانات التالفة والبدء بالبيانات التجريبية
   }
-  return seed()
+  return withBranches(seed())
+}
+
+const BRANCH_KEY = 'medrasti:branch'
+
+// الفرع المختار للعرض: null = كل الفروع. locked: موظف مرتبط بفرع واحد
+function useBranch(full, locked) {
+  const [picked, setPicked] = useState(() => {
+    try {
+      return Number(localStorage.getItem(BRANCH_KEY)) || null
+    } catch {
+      return null
+    }
+  })
+  const valid = (id) => full.branches.some((b) => b.id === id)
+  const current = locked ?? (full.branches.length > 1 && valid(picked) ? picked : null)
+  const setBranch = useCallback((id) => {
+    try {
+      localStorage.setItem(BRANCH_KEY, id ? String(id) : '')
+    } catch {
+      // التخزين غير متاح
+    }
+    setPicked(id)
+  }, [])
+  const state = useMemo(() => branchView(full, current), [full, current])
+  const branch = useMemo(
+    () => ({ list: full.branches, current, set: setBranch, locked: Boolean(locked), defaultId: current ?? full.branches[0]?.id }),
+    [full.branches, current, setBranch, locked],
+  )
+  return { state, branch }
 }
 
 const nextId = (list) => Math.max(0, ...list.map((x) => x.id)) + 1
@@ -46,6 +76,7 @@ const newStudent = (data) => ({ enrollDate: todayIso(), photo: '', discount: 0, 
 export function LocalStore({ children }) {
   const [state, setState] = useState(load)
   const latest = useRef(state)
+  const view = useBranch(state, null)
 
   useLayoutEffect(() => {
     latest.current = state
@@ -80,13 +111,19 @@ export function LocalStore({ children }) {
       addClass: (data) => add('classes', data),
       updateClass: (id, data) => update('classes', id, data),
       deleteClass: (id) => setState((s) => local.deleteClass(s, id)),
+      addBranch: (data) => add('branches', data),
+      updateBranch: (id, data) => update('branches', id, data),
+      deleteBranch: (id) => remove('branches', id),
       markInvoiceSent: (number) => setState((s) => ({ ...s, invoicesSent: { ...s.invoicesSent, [number]: todayIso() } })),
       updateSettings: (data) => setState((s) => ({ ...s, settings: { ...s.settings, ...data } })),
-      resetDemo: () => setState(seed()),
+      resetDemo: () => setState(withBranches(seed())),
     }
   }, [])
 
-  const value = useMemo(() => ({ state, account: null, ...actions }), [state, actions])
+  const value = useMemo(
+    () => ({ state: view.state, full: state, branch: view.branch, account: null, ...actions }),
+    [view, state, actions],
+  )
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>
 }
 
@@ -95,6 +132,7 @@ export function LocalStore({ children }) {
 export function CloudStore({ initial, account, children }) {
   const [state, setState] = useState(initial)
   const sid = account.school.id
+  const view = useBranch(state, account.school.branchId ?? null)
 
   const actions = useMemo(() => {
     // كل عملية تُحفظ في قاعدة البيانات أولًا، ثم تظهر على الشاشة
@@ -138,6 +176,9 @@ export function CloudStore({ initial, account, children }) {
       addClass: (data) => add('classes', data),
       updateClass: (id, data) => update('classes', id, data),
       deleteClass: (id) => remove('classes', id, (s) => local.deleteClass(s, id)),
+      addBranch: (data) => add('branches', data),
+      updateBranch: (id, data) => update('branches', id, data),
+      deleteBranch: (id) => remove('branches', id),
       markInvoiceSent: (number) =>
         run(async () => {
           const day = todayIso()
@@ -155,7 +196,10 @@ export function CloudStore({ initial, account, children }) {
     }
   }, [sid])
 
-  const value = useMemo(() => ({ state, account, ...actions }), [state, account, actions])
+  const value = useMemo(
+    () => ({ state: view.state, full: state, branch: view.branch, account, ...actions }),
+    [view, state, account, actions],
+  )
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>
 }
 

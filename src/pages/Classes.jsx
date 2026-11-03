@@ -3,10 +3,12 @@ import { Pencil, Plus, Trash2, Users } from 'lucide-react'
 import { useStore } from '../store/AppStore.jsx'
 import { money } from '../utils/format.js'
 import { Modal, PageHeader } from '../components/ui.jsx'
+import { BranchField, useShowBranch } from '../components/Branches.jsx'
+import { branchName } from '../utils/branches.js'
 
 function ClassForm({ initial, onSubmit, onCancel }) {
-  const { state } = useStore()
-  const [form, setForm] = useState(initial ?? { name: '', level: 'ثانوي', teacherId: '', fee: '' })
+  const { state, branch } = useStore()
+  const [form, setForm] = useState(initial ?? { name: '', level: 'ثانوي', teacherId: '', fee: '', branchId: branch.defaultId })
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value })
   return (
     <form
@@ -14,7 +16,7 @@ function ClassForm({ initial, onSubmit, onCancel }) {
       onSubmit={(e) => {
         e.preventDefault()
         if (!form.name.trim()) return
-        onSubmit({ ...form, name: form.name.trim(), fee: Number(form.fee) || 0, teacherId: form.teacherId ? Number(form.teacherId) : null })
+        onSubmit({ ...form, name: form.name.trim(), fee: Number(form.fee) || 0, teacherId: form.teacherId ? Number(form.teacherId) : null, branchId: form.branchId ?? branch.defaultId })
       }}
     >
       <div className="form-grid">
@@ -36,6 +38,7 @@ function ClassForm({ initial, onSubmit, onCancel }) {
           <span>الرسوم الشهرية ({state.settings.currency})</span>
           <input type="number" min="0" value={form.fee} onChange={set('fee')} required />
         </label>
+        <BranchField value={form.branchId} onChange={(id) => setForm({ ...form, branchId: id })} />
       </div>
       <div className="form-actions">
         <button type="button" className="btn btn--ghost" onClick={onCancel}>إلغاء</button>
@@ -47,8 +50,9 @@ function ClassForm({ initial, onSubmit, onCancel }) {
 
 export default function Classes() {
   const store = useStore()
-  const { state } = store
+  const { state, full } = store
   const [modal, setModal] = useState(null)
+  const showBranch = useShowBranch()
 
   return (
     <>
@@ -64,7 +68,7 @@ export default function Classes() {
               <div className="class-card__head">
                 <div>
                   <h2>{c.name}</h2>
-                  <span className="muted">{c.level}</span>
+                  <span className="muted">{c.level}{showBranch && ` · ${branchName(full, c.branchId)}`}</span>
                 </div>
                 <div className="row-actions">
                   <button className="icon-btn" title="تعديل" onClick={() => setModal(c)}><Pencil size={17} /></button>

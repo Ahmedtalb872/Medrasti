@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { Eye, IdCard, MessageCircle, Plus, Search } from 'lucide-react'
 import { useStore } from '../store/AppStore.jsx'
-import { account, ACCOUNT_STATUS, classOf, studentNo } from '../utils/finance.js'
+import { ClassTag } from '../components/Branches.jsx'
+import { account, ACCOUNT_STATUS, studentNo } from '../utils/finance.js'
 import { Avatar, Badge, Empty, Modal, PageHeader, Progress } from '../components/ui.jsx'
 import { StudentForm } from '../components/forms.jsx'
 import { useDocs } from '../components/useDocs.jsx'
@@ -63,7 +64,7 @@ export default function Students() {
                         </div>
                       </Link>
                     </td>
-                    <td>{classOf(state, s)?.name ?? '-'}</td>
+                    <td><ClassTag student={s} /></td>
                     <td>
                       <div className="cell-stack">
                         <span>{s.guardianName || '-'}</span>

@@ -15,7 +15,8 @@ function Field({ label, children, full }) {
 }
 
 export function StudentForm({ initial, onSubmit, onCancel }) {
-  const { state } = useStore()
+  const { state, full, branch } = useStore()
+  const showBranch = !branch.current && branch.list.length > 1
   const [form, setForm] = useState(
     initial ?? {
       name: '',
@@ -38,10 +39,13 @@ export function StudentForm({ initial, onSubmit, onCancel }) {
   function submit(e) {
     e.preventDefault()
     if (!form.name.trim()) return
+    const cls = state.classes.find((c) => c.id === Number(form.classId))
     onSubmit({
       ...form,
       name: form.name.trim(),
       classId: Number(form.classId),
+      // الطالب يتبع فرع قسمه
+      branchId: cls?.branchId ?? form.branchId ?? branch.defaultId,
       discount: Math.min(100, Math.max(0, Number(form.discount) || 0)),
     })
   }
@@ -79,7 +83,8 @@ export function StudentForm({ initial, onSubmit, onCancel }) {
           <select value={form.classId ?? ''} onChange={set('classId')} required>
             {state.classes.map((c) => (
               <option key={c.id} value={c.id}>
-                {c.name} — {money(c.fee, state.settings.currency)} شهريًا
+                {c.name}
+                {showBranch && ` (${full.branches.find((b) => b.id === c.branchId)?.name ?? ''})`} — {money(c.fee, state.settings.currency)} شهريًا
               </option>
             ))}
           </select>

@@ -5,6 +5,8 @@ import { useStore } from '../store/AppStore.jsx'
 import { account, ACCOUNT_STATUS, classOf, receiptNo, sum } from '../utils/finance.js'
 import { fmtDate, MONTHS, parseDate, toIso } from '../utils/format.js'
 import { Avatar, Badge, Empty, PageHeader, Progress, StatCard } from '../components/ui.jsx'
+import { useShowBranch } from '../components/Branches.jsx'
+import { branchName } from '../utils/branches.js'
 
 const num = new Intl.NumberFormat('en-US')
 const compact = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 })
@@ -121,8 +123,9 @@ function ago(iso) {
 }
 
 export default function Dashboard() {
-  const { state } = useStore()
+  const { state, full, branch } = useStore()
   const navigate = useNavigate()
+  const byBranch = useShowBranch()
   const [range, setRange] = useState('months6')
   const [query, setQuery] = useState('')
   const [now] = useState(() => new Date())
@@ -142,9 +145,14 @@ export default function Dashboard() {
   const collectedNow = monthTotal(thisMonth)
   const collectedBefore = monthTotal(lastMonth)
 
-  const perClass = state.classes.map((c, i) => ({
-    name: c.name,
-    count: state.students.filter((s) => s.classId === c.id).length,
+  // عند عرض كل الفروع: توزيع الطلاب على الفروع، وإلا على الأقسام
+  const groups = byBranch
+    ? full.branches.map((b) => ({ id: b.id, name: b.name, match: (s) => s.branchId === b.id }))
+    : state.classes.map((c) => ({ id: c.id, name: c.name, match: (s) => s.classId === c.id }))
+  const perClass = groups.map((g, i) => ({
+    id: g.id,
+    name: g.name,
+    count: state.students.filter(g.match).length,
     color: DONUT_COLORS[i % DONUT_COLORS.length],
   }))
   const totalStudents = state.students.length || 1
@@ -155,7 +163,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <PageHeader title="لوحة التحكم" subtitle={`مرحبًا بعودتك — إليك ما يحدث اليوم في ${state.settings.schoolName}`}>
+      <PageHeader title="لوحة التحكم" subtitle={`مرحبًا بعودتك — إليك ما يحدث اليوم في ${state.settings.schoolName}${branch.current ? ` · ${branchName(full, branch.current)}` : byBranch ? ' · كل الفروع' : ''}`}>
         <form
           className="search top-search"
           onSubmit={(e) => {
@@ -222,13 +230,13 @@ export default function Dashboard() {
 
         <div className="panel">
           <div className="panel__head">
-            <h2>توزيع الطلاب على الأقسام</h2>
+            <h2>{byBranch ? 'توزيع الطلاب على الفروع' : 'توزيع الطلاب على الأقسام'}</h2>
           </div>
           <div className="donut-wrap">
             <div className="donut" style={{ background: `conic-gradient(${donut || '#ede9fe 0 100%'})` }} />
             <ul className="legend">
               {perClass.map((c) => (
-                <li key={c.name}>
+                <li key={c.id}>
                   <i style={{ background: c.color }} />
                   <span>{c.name}</span>
                   <b>{Math.round((c.count / totalStudents) * 100)}%</b>
