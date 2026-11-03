@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom'
 import { GraduationCap, IdCard, LayoutDashboard, LogOut, ReceiptText, School, Settings, Users, Wallet } from 'lucide-react'
 import Logo from './Logo.jsx'
 import { useStore } from '../store/AppStore.jsx'
+import { APP_LOGO, APP_NAME } from '../brand.js'
 
 const ROLES = { owner: 'مالك المدرسة', admin: 'مدير', accountant: 'محاسب', secretary: 'سكرتير' }
 
@@ -29,8 +30,11 @@ export default function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="brand">
-        <Logo size={46} className="brand__logo" />
-        <div className="brand__name">{state.settings.schoolName}</div>
+        <img src={APP_LOGO} alt={APP_NAME} width={46} height={46} className="app-logo brand__app" />
+        <div>
+          <div className="brand__name">{APP_NAME}</div>
+          <div className="brand__school">{state.settings.schoolName}</div>
+        </div>
       </div>
       <nav className="nav">
         {groups.map((g) => (

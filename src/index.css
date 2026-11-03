@@ -64,7 +64,9 @@ input, select, button, textarea { font: inherit; color: inherit; }
   scrollbar-width: none;
 }
 .brand { display: flex; align-items: center; gap: 12px; padding: 0 4px 26px; }
-.brand__name { font-weight: 800; font-size: 1.5rem; letter-spacing: 0.06em; }
+.brand__name { font-weight: 800; font-size: 1.5rem; line-height: 1.2; }
+.brand__school { font-size: 0.85rem; font-weight: 600; color: #c4b5fd; }
+.brand__app { box-shadow: 0 0 0 3px rgb(255 255 255 / 0.15), 0 6px 16px rgb(0 0 0 / 0.3); }
 .nav { display: flex; flex-direction: column; gap: 20px; }
 .nav__group { display: flex; flex-direction: column; gap: 10px; }
 .nav__title { font-size: 0.8rem; font-weight: 600; color: #b9a6ec; letter-spacing: 0.04em; padding: 0 6px; }
