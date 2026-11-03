@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { GraduationCap, IdCard, LayoutDashboard, LogOut, ReceiptText, School, Settings, Users, Wallet } from 'lucide-react'
+import { BanknoteArrowDown, GraduationCap, IdCard, LayoutDashboard, LogOut, ReceiptText, School, Settings, Users, Wallet } from 'lucide-react'
 import Logo from './Logo.jsx'
 import { useStore } from '../store/AppStore.jsx'
 import { APP_LOGO, APP_NAME } from '../brand.js'
@@ -15,6 +15,7 @@ const groups = [
       { to: '/students', label: 'الطلاب', icon: Users },
       { to: '/finance', label: 'المالية', icon: Wallet },
       { to: '/invoices', label: 'فواتير الدفع', icon: ReceiptText },
+      { to: '/expenses', label: 'المصاريف', icon: BanknoteArrowDown },
       { to: '/cards', label: 'بطاقات الطلاب', icon: IdCard },
       { to: '/classes', label: 'الأقسام', icon: School },
       { to: '/teachers', label: 'المعلمون', icon: GraduationCap },

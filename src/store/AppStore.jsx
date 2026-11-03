@@ -13,7 +13,8 @@ function load() {
     if (raw) {
       const saved = JSON.parse(raw)
       const base = seed()
-      return withBranches({ ...base, ...saved, branches: saved.branches, settings: { ...base.settings, ...saved.settings } })
+      // المصاريف أُضيفت لاحقًا: البيانات القديمة تبدأ بدون مصاريف
+      return withBranches({ ...base, ...saved, branches: saved.branches, expenses: saved.expenses ?? [], settings: { ...base.settings, ...saved.settings } })
     }
   } catch {
     // تجاهل البيانات التالفة والبدء بالبيانات التجريبية
@@ -114,6 +115,9 @@ export function LocalStore({ children }) {
       addBranch: (data) => add('branches', data),
       updateBranch: (id, data) => update('branches', id, data),
       deleteBranch: (id) => remove('branches', id),
+      addExpense: (data) => add('expenses', data),
+      updateExpense: (id, data) => update('expenses', id, data),
+      deleteExpense: (id) => remove('expenses', id),
       markInvoiceSent: (number) => setState((s) => ({ ...s, invoicesSent: { ...s.invoicesSent, [number]: todayIso() } })),
       updateSettings: (data) => setState((s) => ({ ...s, settings: { ...s.settings, ...data } })),
       resetDemo: () => setState(withBranches(seed())),
@@ -179,6 +183,9 @@ export function CloudStore({ initial, account, children }) {
       addBranch: (data) => add('branches', data),
       updateBranch: (id, data) => update('branches', id, data),
       deleteBranch: (id) => remove('branches', id),
+      addExpense: (data) => add('expenses', data),
+      updateExpense: (id, data) => update('expenses', id, data),
+      deleteExpense: (id) => remove('expenses', id),
       markInvoiceSent: (number) =>
         run(async () => {
           const day = todayIso()

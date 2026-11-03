@@ -36,6 +36,14 @@ export function seed() {
     ],
     // الفواتير التي أُرسلت على واتساب: { رقم الفاتورة: تاريخ الإرسال }
     invoicesSent: {},
+    expenses: [
+      { id: 1, date: '2026-10-01', category: 'إيجار', amount: 25000, description: 'إيجار المبنى لشهر أكتوبر', method: 'تحويل بنكي' },
+      { id: 2, date: '2026-10-05', category: 'كهرباء وماء', amount: 4500, description: 'فاتورة الكهرباء', method: 'نقدًا' },
+      { id: 3, date: '2026-10-08', category: 'أدوات ومستلزمات', amount: 6000, description: 'طباشير وأوراق وحبر الطابعة', method: 'نقدًا' },
+      { id: 4, date: '2026-10-30', category: 'رواتب', amount: 60000, description: 'رواتب المعلمين لشهر أكتوبر', method: 'تحويل بنكي' },
+      { id: 5, date: '2026-11-01', category: 'إيجار', amount: 25000, description: 'إيجار المبنى لشهر نوفمبر', method: 'تحويل بنكي' },
+      { id: 6, date: '2026-11-02', category: 'إنترنت وهاتف', amount: 2500, description: 'اشتراك الإنترنت', method: 'نقدًا' },
+    ],
     payments: [
       { id: 1, studentId: 1, amount: 20000, date: '2026-09-20', method: 'نقدًا', note: 'شهرا أكتوبر ونوفمبر' },
       { id: 2, studentId: 2, amount: 9000, date: '2026-09-21', method: 'تحويل بنكي', note: '' },

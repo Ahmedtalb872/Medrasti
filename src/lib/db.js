@@ -19,6 +19,7 @@ const FIELDS = {
     branchId: 'branch_id',
   },
   payments: { id: 'id', studentId: 'student_id', amount: 'amount', date: 'date', method: 'method', note: 'note' },
+  expenses: { id: 'id', branchId: 'branch_id', date: 'date', category: 'category', amount: 'amount', description: 'description', method: 'method' },
 }
 
 const SETTINGS = {
@@ -70,8 +71,8 @@ async function fetchAll(table, schoolId) {
 
 export async function loadSchool(schoolId) {
   const school = check(await supabase.from('schools').select('*').eq('id', schoolId).single())
-  const [branches, teachers, classes, students, payments] = await Promise.all(
-    ['branches', 'teachers', 'classes', 'students', 'payments'].map(async (t) => (await fetchAll(t, schoolId)).map((r) => fromRow(FIELDS[t], r))),
+  const [branches, teachers, classes, students, payments, expenses] = await Promise.all(
+    ['branches', 'teachers', 'classes', 'students', 'payments', 'expenses'].map(async (t) => (await fetchAll(t, schoolId)).map((r) => fromRow(FIELDS[t], r))),
   )
   const sent = []
   for (let from = 0; ; from += 1000) {
@@ -87,6 +88,7 @@ export async function loadSchool(schoolId) {
     classes,
     students,
     payments,
+    expenses,
     invoicesSent: Object.fromEntries(sent.map((r) => [r.number, r.sent_on])),
   }
 }
@@ -128,4 +130,5 @@ export async function createSchool(name) {
 
 export async function importSchool(schoolId, data) {
   check(await supabase.rpc('import_school_data', { sid: schoolId, data }))
+  if (data.expenses?.length) check(await supabase.rpc('import_school_expenses', { sid: schoolId, data: { expenses: data.expenses } }))
 }
