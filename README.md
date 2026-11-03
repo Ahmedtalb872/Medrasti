@@ -1,6 +1,6 @@
-# مدرستي (Medrasti) — Epsilon
+# مدرستن (Madrastan)
 
-نظام إدارة مدرسة **Epsilon** (الأقسام: MPIC و MPI و PC)، مبني بـ React و Vite، بواجهة عربية كاملة (من اليمين لليسار) وخط Cairo.
+نظام سحابي لإدارة المدارس الخاصة (أول مدرسة عليه: **Epsilon**)، مبني بـ React و Vite، بواجهة عربية كاملة (من اليمين لليسار) وخط Cairo.
 
 الموقع: https://ahmedtalb872.github.io/Medrasti/
 
