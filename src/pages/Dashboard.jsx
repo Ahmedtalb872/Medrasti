@@ -19,7 +19,7 @@ const RANGES = {
 }
 
 // نقاط الرسم: إجمالي المحصَّل حتى نهاية كل يوم أو شهر
-function revenueSeries(payments, range, today = new Date()) {
+function revenueSeries(payments, expenses, range, today = new Date()) {
   const points = []
   if (range === 'days') {
     for (let i = 29; i >= 0; i--) {
@@ -34,19 +34,25 @@ function revenueSeries(payments, range, today = new Date()) {
       points.push({ label: MONTHS[d.getMonth()], end: toIso(d) })
     }
   }
-  return points.map((p) => ({ ...p, value: sum(payments.filter((x) => x.date <= p.end)) }))
+  return points.map((p) => ({
+    ...p,
+    value: sum(payments.filter((x) => x.date <= p.end)),
+    spent: sum(expenses.filter((x) => x.date <= p.end)),
+  }))
 }
 
 function RevenueChart({ points, currency }) {
   const W = 640
   const H = 240
   const pad = { l: 64, r: 24, t: 16, b: 36 }
-  const max = Math.max(...points.map((p) => p.value), 1)
+  const max = Math.max(...points.map((p) => Math.max(p.value, p.spent)), 1)
   const top = niceStep(max / 4) * 4
   const x = (i) => pad.l + (i * (W - pad.l - pad.r)) / Math.max(1, points.length - 1)
   const y = (v) => H - pad.b - (v / top) * (H - pad.t - pad.b)
   const line = points.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.value).toFixed(1)}`).join(' ')
   const area = `${line} L${x(points.length - 1)},${H - pad.b} L${x(0)},${H - pad.b} Z`
+  const spentLine = points.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.spent).toFixed(1)}`).join(' ')
+  const hasSpent = points.some((p) => p.spent > 0)
   const ticks = [0, 1, 2, 3, 4].map((k) => (top / 4) * k)
   const every = Math.ceil(points.length / 6)
   const dots = points.map((p, i) => ({ p, i })).filter(({ i }) => i % every === 0 || i === points.length - 1)
@@ -66,11 +72,12 @@ function RevenueChart({ points, currency }) {
         </g>
       ))}
       <path d={area} fill="url(#revFill)" />
+      {hasSpent && <path d={spentLine} className="chart__line chart__line--spent" />}
       <path d={line} className="chart__line" />
       {dots.map(({ p, i }) => (
         <g key={p.end}>
           <circle cx={x(i)} cy={y(p.value)} r="4.5" className="chart__dot">
-            <title>{`${p.label}: ${num.format(p.value)} ${currency}`}</title>
+            <title>{`${p.label}: المحصَّل ${num.format(p.value)} · المصاريف ${num.format(p.spent)} ${currency}`}</title>
           </circle>
           <text x={x(i)} y={H - 8} textAnchor="middle" className="chart__axis">{p.label}</text>
         </g>
@@ -144,6 +151,7 @@ export default function Dashboard() {
   const monthTotal = (m) => sum(state.payments.filter((p) => p.date.startsWith(m)))
   const collectedNow = monthTotal(thisMonth)
   const collectedBefore = monthTotal(lastMonth)
+  const netNow = collectedNow - sum(state.expenses.filter((e) => e.date.startsWith(thisMonth)))
 
   // عند عرض كل الفروع: توزيع الطلاب على الفروع، وإلا على الأقسام
   const groups = byBranch
@@ -158,7 +166,7 @@ export default function Dashboard() {
   const totalStudents = state.students.length || 1
   const donut = donutStops(perClass, totalStudents)
 
-  const points = revenueSeries(state.payments, range, now)
+  const points = revenueSeries(state.payments, state.expenses, range, now)
   const todayLabel = new Intl.DateTimeFormat('ar', { day: 'numeric', month: 'long', year: 'numeric', numberingSystem: 'latn' }).format(now)
 
   return (
@@ -213,7 +221,7 @@ export default function Dashboard() {
       <div className="dash-grid">
         <div className="panel">
           <div className="panel__head">
-            <h2>المحصَّل عبر الزمن</h2>
+            <h2>المحصَّل والمصاريف</h2>
             <div className="panel__tools">
               <select value={range} onChange={(e) => setRange(e.target.value)} aria-label="الفترة">
                 {Object.entries(RANGES).map(([k, r]) => (
@@ -226,6 +234,13 @@ export default function Dashboard() {
             </div>
           </div>
           <RevenueChart points={points} currency={currency} />
+          <div className="chart-foot">
+            <span><i className="dot dot--in" /> المحصَّل</span>
+            <span><i className="dot dot--out" /> المصاريف</span>
+            <Link to="/expenses" className="chart-foot__net">
+              صافي {MONTHS[now.getMonth()]}: <b className={netNow < 0 ? 'text-danger' : 'text-success'}><bdi dir="ltr">{num.format(netNow)}</bdi> {currency}</b>
+            </Link>
+          </div>
         </div>
 
         <div className="panel">

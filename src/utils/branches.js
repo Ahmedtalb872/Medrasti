@@ -13,6 +13,7 @@ export function withBranches(s) {
     classes: s.classes.map((c) => ({ ...c, branchId: c.branchId ?? first })),
     students: s.students.map((st) => ({ ...st, branchId: st.branchId ?? classBranch[st.classId] ?? first })),
     teachers: s.teachers.map((t) => ({ ...t, branchId: t.branchId ?? null })),
+    expenses: (s.expenses ?? []).map((e) => ({ ...e, branchId: e.branchId ?? first })),
   }
 }
 
@@ -27,6 +28,7 @@ export function branchView(s, branchId) {
     students,
     teachers: s.teachers.filter((t) => !t.branchId || t.branchId === branchId),
     payments: s.payments.filter((p) => ids.has(p.studentId)),
+    expenses: s.expenses.filter((e) => e.branchId === branchId),
   }
 }
 

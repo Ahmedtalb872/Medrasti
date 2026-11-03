@@ -541,3 +541,26 @@ a.person:hover b { color: var(--primary); }
   .branch-row input:first-child, .branch-row--new input:first-child { grid-column: 1 / -1; }
   .branch-row--new .btn { grid-column: 1 / -1; }
 }
+
+/* ---------- المصاريف ---------- */
+.exp-grid { display: grid; grid-template-columns: 1fr 340px; gap: 22px; align-items: start; }
+.exp-grid > .panel { margin-bottom: 0; min-width: 0; }
+.cat-tag { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; }
+.cat-tag i, .cat-bars i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex-shrink: 0; }
+.cat-bars { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.cat-bars li { display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; align-items: center; }
+.cat-bars li > div:first-child { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 10px; }
+.cat-bars li span { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+.cat-bars__track { height: 8px; background: #f1eef8; border-radius: 999px; overflow: hidden; }
+.cat-bars__track div { height: 100%; border-radius: inherit; }
+.cat-bars small { color: var(--muted); font-weight: 700; min-width: 34px; text-align: left; }
+.stat-card__value .text-danger { color: var(--danger); }
+.chart__line--spent { stroke: #f59e0b; stroke-dasharray: 7 6; stroke-width: 2.5; }
+.chart-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin-top: 10px; font-size: 0.88rem; color: var(--text-2); font-weight: 600; }
+.chart-foot span { display: inline-flex; align-items: center; gap: 6px; }
+.dot { width: 12px; height: 4px; border-radius: 2px; display: inline-block; }
+.dot--in { background: #5b21b6; }
+.dot--out { background: #f59e0b; }
+.chart-foot__net { margin-inline-start: auto; }
+.chart-foot__net:hover { text-decoration: underline; }
+@media (max-width: 1100px) { .exp-grid { grid-template-columns: 1fr; } }
