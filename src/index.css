@@ -564,3 +564,55 @@ a.person:hover b { color: var(--primary); }
 .chart-foot__net { margin-inline-start: auto; }
 .chart-foot__net:hover { text-decoration: underline; }
 @media (max-width: 1100px) { .exp-grid { grid-template-columns: 1fr; } }
+
+/* ---------- مشهد التعليم المتحرك (شاشة الدخول) ---------- */
+.auth__layout { width: 100%; max-width: 1000px; display: grid; grid-template-columns: 420px 1fr; align-items: center; gap: 48px; }
+.scene { display: flex; flex-direction: column; align-items: center; gap: 6px; color: #fff; text-align: center; }
+.scene__svg { width: 100%; max-width: 480px; height: auto; overflow: visible; }
+.scene__caption b { display: block; font-size: 1.7rem; font-weight: 800; }
+.scene__caption span { color: #ddd6fe; font-weight: 600; }
+
+.scene__svg * { transform-box: fill-box; }
+.scene__star { transform-origin: center; animation: twinkle 3.2s ease-in-out infinite; opacity: 0.2; }
+.scene__cap { transform-origin: center; animation: capFloat 4s ease-in-out infinite; }
+.scene__tassel { transform-origin: 0% 0%; animation: tassel 2s ease-in-out infinite; }
+.scene__planet { offset-path: path('M136 118 a104 30 0 1 0 208 0 a104 30 0 1 0 -208 0'); offset-rotate: 0deg; animation: orbit 9s linear infinite; }
+.scene__planet--2 { animation-delay: -4.5s; }
+.scene__glyph { font-family: var(--font); font-size: 30px; font-weight: 800; fill: #fff; opacity: 0; animation: rise 8.8s ease-out infinite; }
+.scene__glyph:nth-of-type(odd) { fill: #fde68a; }
+.scene__book { transform-origin: 50% 100%; animation: bookBreath 4s ease-in-out infinite; }
+.scene__page { transform-origin: 0% 50%; animation: flip 5s ease-in-out infinite; }
+.scene__line { stroke-dasharray: 100; stroke-dashoffset: 100; animation: write 4.4s ease-in-out infinite; }
+.scene__ink { stroke-dasharray: 100; stroke-dashoffset: 100; animation: write 3s ease-in-out infinite; }
+.scene__pencil { offset-path: path('M268 368 q10 -10 20 0 t20 0 t20 0 t20 0'); offset-rotate: 0deg; animation: pencil 3s ease-in-out infinite; }
+
+@keyframes twinkle { 0%, 100% { opacity: 0.15; transform: scale(0.6); } 50% { opacity: 1; transform: scale(1.15); } }
+@keyframes capFloat { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-12px) rotate(3deg); } }
+@keyframes tassel { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(8deg); } }
+@keyframes orbit { from { offset-distance: 0%; } to { offset-distance: 100%; } }
+@keyframes rise {
+  0% { opacity: 0; transform: translateY(10px) scale(0.6); }
+  10% { opacity: 1; }
+  60% { opacity: 0.9; }
+  85%, 100% { opacity: 0; transform: translateY(-140px) scale(1.15); }
+}
+@keyframes bookBreath { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+@keyframes flip {
+  0%, 30% { transform: scaleX(1); opacity: 1; }
+  70% { transform: scaleX(-1); opacity: 1; }
+  80%, 100% { transform: scaleX(-1); opacity: 0; }
+}
+@keyframes write { 0% { stroke-dashoffset: 100; } 55%, 85% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes pencil { 0% { offset-distance: 0%; } 55%, 85% { offset-distance: 100%; } 100% { offset-distance: 100%; } }
+
+@media (max-width: 900px) {
+  .auth__layout { grid-template-columns: 1fr; gap: 8px; max-width: 420px; }
+  .auth__layout .scene { order: -1; }
+  .scene__svg { max-width: 190px; margin-bottom: -6px; }
+  .scene__caption { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scene *, .scene__svg * { animation: none !important; }
+  .scene__glyph { opacity: 0.8; }
+  .scene__line, .scene__ink { stroke-dashoffset: 0; }
+}

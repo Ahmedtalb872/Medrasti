@@ -4,6 +4,7 @@ import { LOCAL_KEY, redirectUrl, supabase } from '../lib/supabase.js'
 import * as db from '../lib/db.js'
 import { CloudStore } from '../store/AppStore.jsx'
 import { APP_LOGO, APP_NAME } from '../brand.js'
+import LearningScene from './LearningScene.jsx'
 
 const AppLogo = ({ size }) => <img src={APP_LOGO} alt="" width={size} height={size} className="app-logo" />
 
@@ -28,14 +29,17 @@ function readLocalData() {
 function Screen({ title, subtitle, children }) {
   return (
     <div className="auth">
-      <div className="auth__card">
-        <div className="auth__brand">
-          <AppLogo size={56} />
-          <b>{APP_NAME}</b>
+      <div className="auth__layout">
+        <div className="auth__card">
+          <div className="auth__brand">
+            <AppLogo size={56} />
+            <b>{APP_NAME}</b>
+          </div>
+          <h1>{title}</h1>
+          {subtitle && <p className="auth__sub">{subtitle}</p>}
+          {children}
         </div>
-        <h1>{title}</h1>
-        {subtitle && <p className="auth__sub">{subtitle}</p>}
-        {children}
+        <LearningScene />
       </div>
     </div>
   )
