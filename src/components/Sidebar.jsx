@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { BanknoteArrowDown, GraduationCap, IdCard, LayoutDashboard, LogOut, ReceiptText, School, Settings, Users, Wallet } from 'lucide-react'
+import { BanknoteArrowDown, GraduationCap, IdCard, ShieldCheck, LayoutDashboard, LogOut, ReceiptText, School, Settings, Users, Wallet } from 'lucide-react'
 import Logo from './Logo.jsx'
 import { useStore } from '../store/AppStore.jsx'
 import { APP_LOGO, APP_NAME } from '../brand.js'
@@ -40,7 +40,7 @@ export default function Sidebar() {
       </div>
       <BranchPicker />
       <nav className="nav">
-        {groups.map((g) => (
+        {(account?.isAdmin ? [...groups.slice(0, -1), { ...groups.at(-1), links: [...groups.at(-1).links, { to: '/admin', label: 'لوحة المنصة', icon: ShieldCheck }] }] : groups).map((g) => (
           <div key={g.title} className="nav__group">
             <div className="nav__title">{g.title}</div>
             {g.links.map(({ to, label, icon: Icon }) => (

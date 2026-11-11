@@ -132,3 +132,53 @@ export async function importSchool(schoolId, data) {
   check(await supabase.rpc('import_school_data', { sid: schoolId, data }))
   if (data.expenses?.length) check(await supabase.rpc('import_school_expenses', { sid: schoolId, data: { expenses: data.expenses } }))
 }
+
+// ---------- طلبات تسجيل المدارس ولوحة المنصة ----------
+const REQUEST_FIELDS = 'id, email, school_name, contact_name, phone, city, students_estimate, branches_count, message, status, reject_reason, school_id, created_at, reviewed_at'
+
+export async function isPlatformAdmin() {
+  return Boolean(check(await supabase.rpc('is_platform_admin')))
+}
+
+export async function myRequests(userId) {
+  return check(await supabase.from('school_requests').select(REQUEST_FIELDS).eq('user_id', userId).order('created_at', { ascending: false }))
+}
+
+export async function sendSchoolRequest(data) {
+  return check(
+    await supabase
+      .from('school_requests')
+      .insert({
+        school_name: data.schoolName.trim(),
+        contact_name: data.contactName.trim(),
+        phone: data.phone.trim(),
+        city: data.city.trim(),
+        students_estimate: data.students === '' ? null : Number(data.students),
+        branches_count: Math.max(1, Number(data.branches) || 1),
+        message: data.message.trim(),
+      })
+      .select(REQUEST_FIELDS)
+      .single(),
+  )
+}
+
+export async function listSchoolRequests() {
+  const rows = []
+  for (let from = 0; ; from += 1000) {
+    const page = check(await supabase.from('school_requests').select(REQUEST_FIELDS).order('created_at', { ascending: false }).range(from, from + 999))
+    rows.push(...page)
+    if (page.length < 1000) return rows
+  }
+}
+
+export async function listAllSchools() {
+  return check(await supabase.from('schools').select('id, name, created_at').order('created_at', { ascending: false }))
+}
+
+export async function approveSchoolRequest(id) {
+  return check(await supabase.rpc('approve_school_request', { request_id: id }))
+}
+
+export async function rejectSchoolRequest(id, reason) {
+  check(await supabase.rpc('reject_school_request', { request_id: id, reason }))
+}

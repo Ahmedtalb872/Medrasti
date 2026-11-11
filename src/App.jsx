@@ -7,11 +7,14 @@ import Finance from './pages/Finance.jsx'
 import Cards from './pages/Cards.jsx'
 import Invoices from './pages/Invoices.jsx'
 import Expenses from './pages/Expenses.jsx'
+import Admin from './pages/Admin.jsx'
+import { useStore } from './store/AppStore.jsx'
 import Classes from './pages/Classes.jsx'
 import Teachers from './pages/Teachers.jsx'
 import Settings from './pages/Settings.jsx'
 
 export default function App() {
+  const { account } = useStore()
   return (
     <div className="layout">
       <Sidebar />
@@ -27,6 +30,7 @@ export default function App() {
           <Route path="/classes" element={<Classes />} />
           <Route path="/teachers" element={<Teachers />} />
           <Route path="/settings" element={<Settings />} />
+          {account?.isAdmin && <Route path="/admin" element={<Admin />} />}
         </Routes>
       </main>
     </div>

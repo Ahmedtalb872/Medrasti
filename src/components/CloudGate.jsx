@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
-import { LogIn, School, UserPlus } from 'lucide-react'
+import { Clock, LogIn, LogOut, RefreshCw, School, Send, ShieldCheck, UserPlus } from 'lucide-react'
 import { LOCAL_KEY, redirectUrl, supabase } from '../lib/supabase.js'
 import * as db from '../lib/db.js'
 import { CloudStore } from '../store/AppStore.jsx'
 import { APP_LOGO, APP_NAME } from '../brand.js'
 import LearningScene from './LearningScene.jsx'
+import Admin from '../pages/Admin.jsx'
 
 const AppLogo = ({ size }) => <img src={APP_LOGO} alt="" width={size} height={size} className="app-logo" />
 
@@ -59,6 +60,7 @@ function Splash({ text = 'جارٍ التحميل…' }) {
 function AuthScreen() {
   const [mode, setMode] = useState('login')
   const [email, setEmail] = useState('')
+  const [fullName, setFullName] = useState('')
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -74,7 +76,11 @@ function AuthScreen() {
         const { error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
       } else if (mode === 'signup') {
-        const { data, error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: redirectUrl() } })
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { emailRedirectTo: redirectUrl(), data: { full_name: fullName.trim() } },
+        })
         if (error) throw error
         if (!data.session) setInfo('أرسلنا رابط تأكيد إلى بريدك. افتحه ثم عُد لتسجيل الدخول.')
       } else {
@@ -97,7 +103,7 @@ function AuthScreen() {
   }
 
   return (
-    <Screen title={titles[mode]} subtitle={mode === 'signup' ? 'أنشئ حسابًا ثم أضف مدرستك' : 'نظام إدارة المدارس'}>
+    <Screen title={titles[mode]} subtitle={mode === 'signup' ? 'أنشئ حسابًا، ثم أرسل طلب تسجيل مدرستك' : 'نظام إدارة المدارس'}>
       {mode !== 'forgot' && (
         <div className="tabs auth__tabs">
           <button type="button" className={mode === 'login' ? 'is-active' : ''} onClick={go('login')}>دخول</button>
@@ -105,6 +111,12 @@ function AuthScreen() {
         </div>
       )}
       <form className="form" onSubmit={submit}>
+        {mode === 'signup' && (
+          <label className="field">
+            <span>الاسم الكامل</span>
+            <input autoComplete="name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+          </label>
+        )}
         <label className="field">
           <span>البريد الإلكتروني</span>
           <input type="email" dir="ltr" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
@@ -166,7 +178,7 @@ function NewPassword({ onDone }) {
   )
 }
 
-function CreateSchool({ email, onCreated }) {
+function CreateSchool({ email, onCreated, onBack }) {
   const [localData] = useState(readLocalData)
   const [name, setName] = useState(localData?.settings?.schoolName ?? '')
   const [importLocal, setImportLocal] = useState(false)
@@ -191,7 +203,7 @@ function CreateSchool({ email, onCreated }) {
   }
 
   return (
-    <Screen title="أضف مدرستك" subtitle={`مرحبًا ${email}، لا توجد مدرسة مرتبطة بحسابك بعد.`}>
+    <Screen title="إنشاء مدرسة" subtitle={`أنت مدير المنصة (${email})، يمكنك إنشاء مدرسة مباشرة بدون طلب.`}>
       <form className="form" onSubmit={submit}>
         <label className="field">
           <span>اسم المدرسة</span>
@@ -214,14 +226,122 @@ function CreateSchool({ email, onCreated }) {
         </button>
       </form>
       <div className="auth__links">
-        <button type="button" className="link" onClick={() => supabase.auth.signOut()}>تسجيل الخروج</button>
+        <button type="button" className="link" onClick={onBack}>العودة إلى لوحة المنصة</button>
       </div>
     </Screen>
   )
 }
 
+const EMPTY_REQUEST = { schoolName: '', contactName: '', phone: '', city: '', students: '', branches: 1, message: '' }
+
+// المدرسة الجديدة ترسل طلبًا يظهر في لوحة المنصة، ثم تنتظر القبول
+function SchoolRequestScreen({ user, requests, onChanged }) {
+  const latest = requests[0]
+  const [form, setForm] = useState(() =>
+    latest
+      ? { schoolName: latest.school_name, contactName: latest.contact_name, phone: latest.phone, city: latest.city, students: latest.students_estimate ?? '', branches: latest.branches_count, message: latest.message }
+      : { ...EMPTY_REQUEST, contactName: user.user_metadata?.full_name ?? '' },
+  )
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+  const set = (k) => (e) => setForm({ ...form, [k]: e.target.value })
+  const signOut = (
+    <div className="auth__links">
+      <button type="button" className="link" onClick={() => supabase.auth.signOut()}>تسجيل الخروج</button>
+    </div>
+  )
+
+  async function submit(e) {
+    e.preventDefault()
+    setBusy(true)
+    setError('')
+    try {
+      await db.sendSchoolRequest(form)
+      onChanged()
+    } catch (err) {
+      setError(arabic(err))
+      setBusy(false)
+    }
+  }
+
+  if (latest?.status === 'pending') {
+    return (
+      <Screen title="طلبك قيد المراجعة" subtitle="وصل طلب تسجيل مدرستك إلى إدارة المنصة، وسنفعّل حسابك بعد مراجعته.">
+        <div className="req-status">
+          <div className="req-status__icon"><Clock size={26} /></div>
+          <div>
+            <b>{latest.school_name}</b>
+            <span>{latest.city || '—'} · أُرسل في {new Date(latest.created_at).toLocaleDateString('ar', { numberingSystem: 'latn' })}</span>
+          </div>
+        </div>
+        <ol className="req-steps">
+          <li className="is-done">إنشاء الحساب</li>
+          <li className="is-done">إرسال طلب المدرسة</li>
+          <li className="is-current">مراجعة الطلب من إدارة المنصة</li>
+          <li>تفعيل المدرسة والبدء</li>
+        </ol>
+        <button className="btn btn--primary auth__submit" onClick={onChanged}><RefreshCw size={18} /> تحديث الحالة</button>
+        {signOut}
+      </Screen>
+    )
+  }
+
+  return (
+    <Screen title="طلب تسجيل مدرسة" subtitle="املأ بيانات مدرستك وسنراجع الطلب ونفعّل حسابك.">
+      {latest?.status === 'rejected' && (
+        <div className="auth__msg auth__msg--error">
+          رُفض طلبك السابق{latest.reject_reason ? `: ${latest.reject_reason}` : '.'} يمكنك تعديل البيانات وإرساله من جديد.
+        </div>
+      )}
+      <form className="form" onSubmit={submit}>
+        <label className="field"><span>اسم المدرسة</span><input value={form.schoolName} onChange={set('schoolName')} required /></label>
+        <label className="field"><span>اسم المسؤول</span><input value={form.contactName} onChange={set('contactName')} required /></label>
+        <div className="form-grid form-grid--tight">
+          <label className="field"><span>الهاتف (واتساب)</span><input type="tel" dir="ltr" value={form.phone} onChange={set('phone')} required /></label>
+          <label className="field"><span>المدينة</span><input value={form.city} onChange={set('city')} required /></label>
+          <label className="field"><span>عدد الطلاب تقريبًا</span><input type="number" min="0" value={form.students} onChange={set('students')} /></label>
+          <label className="field"><span>عدد الفروع</span><input type="number" min="1" value={form.branches} onChange={set('branches')} /></label>
+        </div>
+        <label className="field"><span>ملاحظات (اختياري)</span><input value={form.message} onChange={set('message')} /></label>
+        {error && <div className="auth__msg auth__msg--error">{error}</div>}
+        <button className="btn btn--primary auth__submit" disabled={busy}>
+          <Send size={18} /> {busy ? 'جارٍ الإرسال…' : 'إرسال الطلب'}
+        </button>
+      </form>
+      {signOut}
+    </Screen>
+  )
+}
+
+// لوحة المنصة لمدير ليس عضوًا في أي مدرسة
+function AdminShell({ email, onCreateSchool }) {
+  return (
+    <div className="admin-shell">
+      <header className="admin-shell__bar">
+        <div className="admin-shell__brand">
+          <AppLogo size={40} />
+          <div>
+            <b>{APP_NAME}</b>
+            <span><ShieldCheck size={14} /> لوحة المنصة · <bdi dir="ltr">{email}</bdi></span>
+          </div>
+        </div>
+        <div className="admin-shell__actions">
+          <button className="btn btn--ghost" onClick={onCreateSchool}><School size={16} /> إنشاء مدرسة لي</button>
+          <button className="btn btn--ghost" onClick={() => supabase.auth.signOut()}><LogOut size={16} /> خروج</button>
+        </div>
+      </header>
+      <main className="content admin-shell__content">
+        <Admin />
+      </main>
+    </div>
+  )
+}
+
 function SchoolLoader({ user, children }) {
   const [schools, setSchools] = useState(null)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [requests, setRequests] = useState([])
+  const [creating, setCreating] = useState(false)
   const [schoolId, setSchoolId] = useState(() => localStorage.getItem(SCHOOL_KEY))
   const [data, setData] = useState(null)
   const [error, setError] = useState('')
@@ -229,8 +349,13 @@ function SchoolLoader({ user, children }) {
 
   useEffect(() => {
     let live = true
-    db.mySchools(user.id)
-      .then((list) => live && setSchools(list))
+    Promise.all([db.mySchools(user.id), db.isPlatformAdmin(), db.myRequests(user.id)])
+      .then(([list, admin, reqs]) => {
+        if (!live) return
+        setIsAdmin(admin)
+        setRequests(reqs)
+        setSchools(list)
+      })
       .catch((err) => live && setError(arabic(err)))
     return () => {
       live = false
@@ -272,12 +397,16 @@ function SchoolLoader({ user, children }) {
   }
   if (!schools) return <Splash />
   if (!school) {
+    const refresh = () => setReload((n) => n + 1)
+    if (!isAdmin) return <SchoolRequestScreen key={requests[0]?.id ?? 'new'} user={user} requests={requests} onChanged={refresh} />
+    if (!creating) return <AdminShell email={user.email} onCreateSchool={() => setCreating(true)} />
     return (
       <CreateSchool
         email={user.email}
+        onBack={() => setCreating(false)}
         onCreated={(id) => {
           switchSchool(id)
-          setReload((n) => n + 1)
+          refresh()
         }}
       />
     )
@@ -286,6 +415,7 @@ function SchoolLoader({ user, children }) {
 
   const account = {
     email: user.email,
+    isAdmin,
     school,
     schools,
     switchSchool,
