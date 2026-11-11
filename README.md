@@ -39,6 +39,7 @@ npm run dev
    1. `supabase/migrations/0001_schools.sql`
    2. `supabase/migrations/0002_branches.sql`
    3. `supabase/migrations/0003_expenses.sql`
+   4. `supabase/migrations/0004_school_requests.sql`
 3. من **Authentication → URL Configuration** ضع رابط الموقع في **Site URL** و **Redirect URLs**:
    `https://ahmedtalb872.github.io/Medrasti/`
 4. من **Project Settings → API** انسخ **Project URL** و **anon public key**.
@@ -54,7 +55,20 @@ VITE_SUPABASE_URL=...
 VITE_SUPABASE_ANON_KEY=...
 ```
 
-بعدها يفتح النظام بصفحة تسجيل الدخول. أول مرة: أنشئ حسابًا، ثم أضف المدرسة. إذا كانت في المتصفح بيانات قديمة يظهر خيار لنقلها إلى المدرسة الجديدة.
+بعدها يفتح النظام بصفحة تسجيل الدخول.
+
+### لوحة المنصة وطلبات المدارس
+
+المدرسة الجديدة لا تُنشأ مباشرة: صاحبها ينشئ حسابًا ويرسل **طلب تسجيل مدرسة**، فيظهر الطلب في **لوحة المنصة**، وتقبله (فتُنشأ المدرسة بفرعها الرئيسي ويصبح صاحب الطلب مالكها) أو ترفضه مع ذكر السبب.
+
+لتصبح مدير المنصة: أنشئ حسابك من الموقع أولًا، ثم شغّل في **SQL Editor** (ضع بريدك):
+
+```sql
+insert into public.platform_admins (user_id)
+select id from auth.users where email = 'بريدك@example.com';
+```
+
+مدير المنصة يدخل مباشرة إلى لوحة المنصة، ويمكنه إنشاء مدرسته بدون طلب، مع نقل البيانات المحفوظة في المتصفح.
 
 ## ملاحظات
 
